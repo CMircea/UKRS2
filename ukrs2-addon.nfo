@@ -50,13 +50,15 @@
    38 * 9	 07 88 04 \7G 4D 43 58 00 01
    39 * 41	 0B 03 7F "ÿUKRS2 must be loaded before "
 	 "this grf" 00
-   40 * 250	 08 08 "MCX" 01 "UK Railway Add-on Set (UKRS2+)" 00
+   40 * 336	 08 08 "MCX" 01 "UK Railway Add-on Set (UKRS2+) - Community Bugfixes" 00
 	 94 "Version " 95 "Gobi" 0D 0D 94 "Coding and graphics "
 	 "by " 95 "David Dallaston" 94 ", graphics by "
 	 "extended set contributors." 0D 94 "Special "
 	 "thanks to " 95 "all the developers " 94 "of "
 	 "TTDPatch and OpenTTD." 0D 0D 98 "©2013.  "
-	 90 "http://users.tt-forums.net/pikka/wiki/" 00
+	 90 "http://users.tt-forums.net/pikka/wiki/"
+	 0D 0D 94 "Bugfixes by " 95 "Mircea Chirea" 94 "."
+	 0D 90 "https://github.com/CMircea/UKRS2" 00
    41 * 7	 00 0B 01 01 0A 15 00
    42 * 9	 0D 8E \D= FF 00 02 00 00 00
    43 * 9	 0D 9E \D| 9E FF 08 00 00 00
