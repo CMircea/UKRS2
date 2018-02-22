@@ -50,7 +50,7 @@
    38 * 9	 07 88 04 \7G 44 44 10 00 01
    39 * 41	 0B 03 7F "ÿUKRS2 must be loaded before "
 	 "this grf" 00
-   40 * 250	 08 08 "DD" 10 01 "UK Railway Add-on Set (UKRS2+)" 00
+   40 * 250	 08 08 "MCX" 01 "UK Railway Add-on Set (UKRS2+)" 00
 	 94 "Version " 95 "Gobi" 0D 0D 94 "Coding and graphics "
 	 "by " 95 "David Dallaston" 94 ", graphics by "
 	 "extended set contributors." 0D 94 "Special "

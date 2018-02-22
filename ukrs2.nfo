@@ -77,7 +77,7 @@
    30 * 9	 09 A1 04 \7> 00 00 00 12 01
    31 * 71	 0B 03 7F "ÿUKRS requires a newer version "
 	 "of OpenTTD (requires 1.2.0 or later)" 00
-   32 * 253	 08 08 "DD" 10 00 "UK Railway Set (UKRS2)" 00 94 "Version "
+   32 * 253	 08 08 "MCX" 00 "UK Railway Set (UKRS2)" 00 94 "Version "
 	 95 "1.05" 0D 0D 94 "Coding and graphics by " 95
 	 "David Dallaston" 94 ", additional graphics "
 	 "by extended set contributors." 0D 94 "Special "
