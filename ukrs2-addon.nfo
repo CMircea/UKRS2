@@ -47,7 +47,7 @@
    36 * 9	 09 A1 04 \7> 00 00 00 12 01
    37 * 71	 0B 03 7F "ÿUKRS requires a newer version "
 	 "of OpenTTD (requires 1.2.0 or later)" 00
-   38 * 9	 07 88 04 \7G 44 44 10 00 01
+   38 * 9	 07 88 04 \7G 4D 43 58 00 01
    39 * 41	 0B 03 7F "ÿUKRS2 must be loaded before "
 	 "this grf" 00
    40 * 250	 08 08 "MCX" 01 "UK Railway Add-on Set (UKRS2+)" 00
