@@ -712,8 +712,8 @@
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
   419 * 86	 00 08 01 14 00 12
-        "SAAN" // 00 Unpowered
-		"SAAE" // 01 Catenary
+        "RAIL" // 00 Unpowered
+		"ELRL" // 01 Catenary
 		"SAA3" // 02 3rd rail
 		"SAAZ" // 03 3rd rail & catenary
 
@@ -728,14 +728,16 @@
         "MTRU" // 0B
         "MTRT" // 0C
 
-        // Catenary legacy & weird (AC electification, 4th rail combo)
-		"ELRL" // 0D
-        "SAAA" // 0E
-        "SAAY" // 0F
-        "ELOW" // 10
-        "EMED" // 11
-        "EHIG" // 12
-        "HSTR" // 13
+        // Catenary (various speeds)
+		"SAAE" // 0D
+        "SBAE" // 0E
+        "SCAE" // 0F
+        "SDAE" // 10
+        "SFAE" // 11
+
+        // Catenary (weird)
+        "SAAA" // 12 AC catenary
+        "SAAY" // 13 4th rail & catenary
 
 		// 3rd available =  02 0C
 		// OHLE available = 01 01, 03 03, 05 05, 07 07, 0D 13
