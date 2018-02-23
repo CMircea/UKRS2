@@ -712,17 +712,33 @@
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
   419 * 86	 00 08 01 14 00 12
-		"RAIL" // 00       01
-		"ELRL" // 01       02
-		"3RDR" // 02       04
-		"3RDC" // 03       08
+        "SAAN" // 00 Unpowered
+		"SAAE" // 01 Catenary
+		"SAA3" // 02 3rd rail
+		"SAAZ" // 03 3rd rail & catenary
 
-		// bunch of nutracks nonsense for powering JB / dual power speed
-		"3LOW" "CLOW" "3MED" "CMED" "MTRO" "MTRC" "MTRS" "MTRU" "MTRT"  // 04-0C
-		"ELOW" "EMED" "EHIG" "HSTR" "DBNE" "DBHE" "DBHS" // 0D-13
+        // 3rd rail legacy
+		"3RDR" // 04
+        "3RDC" // 05
+        "3LOW" // 06
+        "CLOW" // 07
+        "MTRO" // 08
+        "MTRC" // 09
+        "MTRS" // 0A
+        "MTRU" // 0B
+        "MTRT" // 0C
+
+        // Catenary legacy & weird (AC electification, 4th rail combo)
+		"ELRL" // 0D
+        "SAAA" // 0E
+        "SAAY" // 0F
+        "ELOW" // 10
+        "EMED" // 11
+        "EHIG" // 12
+        "HSTR" // 13
 
 		// 3rd available =  02 0C
-		// OHLE available = 01 01 , 03 03 , 05 05 , 07 07 , 0D 13
+		// OHLE available = 01 01, 03 03, 05 05, 07 07, 0D 13
   420 * 356	 00 00 03 74 00 06 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 	 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
