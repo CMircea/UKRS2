@@ -301,7 +301,7 @@
   203 * 134	 00 08 01 20 00 09 "PASSCOALMAILOIL_LVSTGOODGRAIWOODIORESTELVALU"
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
-  204 * 178	 00 08 01 2B 00 12
+  204 * 298	 00 08 01 49 00 12
         "RAIL" // 00 Unpowered
 		"ELRL" // 01 Catenary
 		"3RDR" // 02 3rd rail
@@ -318,7 +318,7 @@
         "MTRU" // 0B
         "MTRT" // 0C
 
-        // standard 3rd rail
+        // standard 3rd rail (axle weight A)
 		"SAA3" // 0D speed A
         "SBA3" // 0E speed B
         "SCA3" // 0F speed C
@@ -330,32 +330,68 @@
         "SSA3" // 15 subterranean
         "SUA3" // 16 urban
 
-        // standard 3rd rail & catenary
-		"SAAZ" // 17 speed A
-        "SBAZ" // 18 speed B
-        "SCAZ" // 19 speed C
-        "SDAZ" // 1A speed D
-        "SEAZ" // 1B speed E
-        "SFAZ" // 1C speed F
-        "SGAZ" // 1D speed G
-        "SHAZ" // 1E speed H
-        "SSAZ" // 1F subterranean
-        "SUAZ" // 20 urban
+        // standard 3rd rail (axle weight B)
+		"SAB3" // 17 speed A
+        "SBB3" // 18 speed B
+        "SCB3" // 19 speed C
+        "SDB3" // 1A speed D
+        "SEB3" // 1B speed E
+        "SFB3" // 1C speed F
+        "SGB3" // 1D speed G
+        "SHB3" // 1E speed H
+        "SSB3" // 1F subterranean
+        "SUB3" // 20 urban
 
-        // standard catenary
-		"SAAE" // 21 speed A
-        "SBAE" // 22 speed B
-        "SCAE" // 23 speed C
-        "SDAE" // 24 speed D
-        "SEAE" // 25 speed E
-        "SFAE" // 26 speed F
-        "SGAE" // 27 speed G
-        "SHAE" // 28 speed H
-        "SSAE" // 29 subterranean
-        "SUAE" // 2A urban
+        // standard 3rd rail & catenary (axle weight A)
+		"SAAZ" // 21 speed A
+        "SBAZ" // 22 speed B
+        "SCAZ" // 23 speed C
+        "SDAZ" // 24 speed D
+        "SEAZ" // 25 speed E
+        "SFAZ" // 26 speed F
+        "SGAZ" // 27 speed G
+        "SHAZ" // 28 speed H
+        "SSAZ" // 29 subterranean
+        "SUAZ" // 2A urban
 
-		// 3rd rail available = 02 20
-		// catenary available = 01 01, 03 03, 05 05, 07 07, 17 2A
+        // standard 3rd rail & catenary (axle weight B)
+		"SABZ" // 2B speed A
+        "SBBZ" // 2C speed B
+        "SCBZ" // 2D speed C
+        "SDBZ" // 2E speed D
+        "SEBZ" // 2F speed E
+        "SFBZ" // 30 speed F
+        "SGBZ" // 31 speed G
+        "SHBZ" // 32 speed H
+        "SSBZ" // 33 subterranean
+        "SUBZ" // 34 urban
+
+        // standard catenary (axle weight A)
+		"SAAE" // 35 speed A
+        "SBAE" // 36 speed B
+        "SCAE" // 37 speed C
+        "SDAE" // 38 speed D
+        "SEAE" // 39 speed E
+        "SFAE" // 3A speed F
+        "SGAE" // 3B speed G
+        "SHAE" // 3C speed H
+        "SSAE" // 3D subterranean
+        "SUAE" // 3E urban
+
+        // standard catenary (axle weight B)
+		"SABE" // 3F speed A
+        "SBBE" // 40 speed B
+        "SCBE" // 41 speed C
+        "SDBE" // 42 speed D
+        "SEBE" // 43 speed E
+        "SFBE" // 44 speed F
+        "SGBE" // 45 speed G
+        "SHBE" // 46 speed H
+        "SSBE" // 47 subterranean
+        "SUBE" // 48 urban
+
+		// 3rd rail available = 02 34
+		// catenary available = 01 01, 03 03, 05 05, 07 07, 17 48
   205 * 11	 02 00 80 81 7D 01 00 FF 00 00 80
 //!!Warning (100): Default ID appears earlier in sprite.
   206 * 28	 02 00 81 81 7D 01 20 FF \2u/ 1A 20 0A \2+ 7D 01 20 FF \2sto 1A 00 01 01 80 00 00 00 80 00
@@ -3321,8 +3357,8 @@
  3070 * 14	 02 00 21 81 10 00 FF 01 A0 80 09 09 11 00
  3071 * 14	 02 00 12 81 0C 00 FF 01 21 00 36 36 12 00
  3072 * 14	 02 00 11 81 0C 00 FF 01 21 00 36 36 11 00
- 3073 * 30	 02 00 11 81 4A 00 FF 05 01 00 01 01 01 00 03 03 01 00 05 05 01 00 07 07 01 00 17 2A 11 00
- 3074 * 30	 02 00 12 81 4A 00 FF 05 02 00 01 01 02 00 03 03 02 00 05 05 02 00 07 07 02 00 17 2A 12 00
+ 3073 * 30	 02 00 11 81 4A 00 FF 05 01 00 01 01 01 00 03 03 01 00 05 05 01 00 07 07 01 00 17 48 11 00
+ 3074 * 30	 02 00 12 81 4A 00 FF 05 02 00 01 01 02 00 03 03 02 00 05 05 02 00 07 07 02 00 17 48 12 00
  3075 * 14	 02 00 20 81 0C 00 FF 01 CF 8A 2D 2D 11 00
  3076 * 15	 02 00 11 81 7F 02 00 02 01 20 00 02 02 11 00
  3077 * 14	 02 00 20 81 0C 00 FF 01 B1 8A 2D 2D 12 00
@@ -3370,7 +3406,7 @@
 //!!Warning (100): Default ID appears earlier in sprite.
  3118 * 22	 02 00 23 85 1A 20 B0 1D \2sto 1A 00 01 00 01 21 00 00 00 00 00 21 00
  3119 * 14	 02 00 23 81 40 00 FF 01 96 A7 00 00 23 00
- 3120 * 30	 02 00 22 81 4A 00 FF 05 22 00 01 01 22 00 03 03 22 00 05 05 22 00 07 07 22 00 17 2A 23 00
+ 3120 * 30	 02 00 22 81 4A 00 FF 05 22 00 01 01 22 00 03 03 22 00 05 05 22 00 07 07 22 00 17 48 23 00
  3121 * 14	 02 00 22 81 10 00 FF 01 22 00 0B 0B A5 00
  3122 * 14	 02 00 A5 81 0C 00 FF 01 22 00 36 36 A5 00
  3123 * 14	 02 00 A2 81 C6 00 FF 01 00 84 05 05 E5 80
@@ -3382,7 +3418,7 @@
  3128 * 18	 02 00 22 81 1A 20 9C \2sto 1A 00 01 01 21 00 00 00 21 00
 //!!Warning (100): Default ID appears earlier in sprite.
  3129 * 18	 02 00 23 81 1A 20 48 \2sto 1A 00 01 01 21 00 00 00 21 00
- 3130 * 30	 02 00 21 81 4A 00 FF 05 22 00 01 01 22 00 03 03 22 00 05 05 22 00 07 07 22 00 17 2A 23 00
+ 3130 * 30	 02 00 21 81 4A 00 FF 05 22 00 01 01 22 00 03 03 22 00 05 05 22 00 07 07 22 00 17 48 23 00
  3131 * 14	 02 00 21 81 10 00 FF 01 21 00 0D 0D A5 00
  3132 * 14	 02 00 A5 81 0C 00 FF 01 21 00 36 36 A5 00
  3133 * 14	 02 00 CC 81 0C 00 FF 01 DF 80 23 23 CC 00
