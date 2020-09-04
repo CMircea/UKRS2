@@ -301,12 +301,12 @@
   203 * 134	 00 08 01 20 00 09 "PASSCOALMAILOIL_LVSTGOODGRAIWOODIORESTELVALU"
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
-  204 * 86	 00 08 01 2B 00 12
+  204 * 178	 00 08 01 2B 00 12
         "RAIL" // 00 Unpowered
 		"ELRL" // 01 Catenary
 		"3RDR" // 02 3rd rail
 		"3RDC" // 03 3rd rail & catenary
-        
+
         // 3rd rail legacy
         "3LOW" // 04 low-speed
         "CLOW" // 05 low-speed & catenary
