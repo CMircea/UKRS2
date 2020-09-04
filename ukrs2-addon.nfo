@@ -301,36 +301,61 @@
   203 * 134	 00 08 01 20 00 09 "PASSCOALMAILOIL_LVSTGOODGRAIWOODIORESTELVALU"
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
-  204 * 86	 00 08 01 14 00 12
+  204 * 86	 00 08 01 2B 00 12
         "RAIL" // 00 Unpowered
 		"ELRL" // 01 Catenary
-		"SAA3" // 02 3rd rail
-		"SAAZ" // 03 3rd rail & catenary
-
+		"3RDR" // 02 3rd rail
+		"3RDC" // 03 3rd rail & catenary
+        
         // 3rd rail legacy
-		"3RDR" // 04
-        "3RDC" // 05
-        "3LOW" // 06
-        "CLOW" // 07
+        "3LOW" // 04 low-speed
+        "CLOW" // 05 low-speed & catenary
+        "3MED" // 06 medium-speed
+        "CMED" // 07 medium-speed & catenary
         "MTRO" // 08
         "MTRC" // 09
         "MTRS" // 0A
         "MTRU" // 0B
         "MTRT" // 0C
 
-        // Catenary (various speeds)
-		"SAAE" // 0D
-        "SBAE" // 0E
-        "SCAE" // 0F
-        "SDAE" // 10
-        "SFAE" // 11
+        // standard 3rd rail
+		"SAA3" // 0D speed A
+        "SBA3" // 0E speed B
+        "SCA3" // 0F speed C
+        "SDA3" // 10 speed D
+        "SEA3" // 11 speed E
+        "SFA3" // 12 speed F
+        "SGA3" // 13 speed G
+        "SHA3" // 14 speed H
+        "SSA3" // 15 subterranean
+        "SUA3" // 16 urban
 
-        // Catenary (weird)
-        "SAAA" // 12 AC catenary
-        "SAAY" // 13 4th rail & catenary
+        // standard 3rd rail & catenary
+		"SAAZ" // 17 speed A
+        "SBAZ" // 18 speed B
+        "SCAZ" // 19 speed C
+        "SDAZ" // 1A speed D
+        "SEAZ" // 1B speed E
+        "SFAZ" // 1C speed F
+        "SGAZ" // 1D speed G
+        "SHAZ" // 1E speed H
+        "SSAZ" // 1F subterranean
+        "SUAZ" // 20 urban
 
-		// 3rd available =  02 0C
-		// OHLE available = 01 01, 03 03, 05 05, 07 07, 0D 13
+        // standard catenary
+		"SAAE" // 21 speed A
+        "SBAE" // 22 speed B
+        "SCAE" // 23 speed C
+        "SDAE" // 24 speed D
+        "SEAE" // 25 speed E
+        "SFAE" // 26 speed F
+        "SGAE" // 27 speed G
+        "SHAE" // 28 speed H
+        "SSAE" // 29 subterranean
+        "SUAE" // 2A urban
+
+		// 3rd available  = 02 20
+		// OHLE available = 01 01, 03 03, 17 2A
   205 * 11	 02 00 80 81 7D 01 00 FF 00 00 80
 //!!Warning (100): Default ID appears earlier in sprite.
   206 * 28	 02 00 81 81 7D 01 20 FF \2u/ 1A 20 0A \2+ 7D 01 20 FF \2sto 1A 00 01 01 80 00 00 00 80 00
@@ -3369,7 +3394,7 @@
  3139 * 17	 00 00 04 01 FF 2B 01 09 2A 01 16 45 0B 10 40 1F 42
  3140 * 17	 00 00 05 01 FF 2B 01 13 01 14 00 15 00 27 06 21 00
  3141 * 22	 00 00 05 01 FF 2B 01 1E EF 28 00 00 29 00 00 1D 00 00 00 00 1C 00
- 3142 * 9	 07 00 04 0E "SAAZ" 01
+ 3142 * 9	 07 00 04 0E "3RDC" 01
  3143 * 9	 00 00 01 01 FF 2B 01 05 01
  3144 * 6	 07 05 01 \7! 03 87
  3145 * 6	 07 9A 01 \7= FF 88
