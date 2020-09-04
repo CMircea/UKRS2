@@ -354,8 +354,8 @@
         "SSAE" // 29 subterranean
         "SUAE" // 2A urban
 
-		// 3rd available  = 02 20
-		// OHLE available = 01 01, 03 03, 17 2A
+		// 3rd rail available = 02 20
+		// catenary available = 01 01, 03 03, 05 05, 07 07, 17 2A
   205 * 11	 02 00 80 81 7D 01 00 FF 00 00 80
 //!!Warning (100): Default ID appears earlier in sprite.
   206 * 28	 02 00 81 81 7D 01 20 FF \2u/ 1A 20 0A \2+ 7D 01 20 FF \2sto 1A 00 01 01 80 00 00 00 80 00
