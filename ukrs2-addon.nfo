@@ -51,7 +51,7 @@
    39 * 41	 0B 03 7F "ÿUKRS2 must be loaded before "
 	 "this grf" 00
    40 * 336	 08 08 "MCX" 01 "UK Railway Add-on Set (UKRS2+) - Community Bugfixes" 00
-	 94 "Version " 95 "Gobi" 0D 0D 94 "Coding and graphics "
+	 94 "Version " 95 "1.06" 0D 0D 94 "Coding and graphics "
 	 "by " 95 "David Dallaston" 94 ", graphics by "
 	 "extended set contributors." 0D 94 "Special "
 	 "thanks to " 95 "all the developers " 94 "of "
