@@ -323,17 +323,30 @@
   203 * 134	 00 08 01 20 00 09 "PASSCOALMAILOIL_LVSTGOODGRAIWOODIORESTELVALU"
 	 "PAPRFOODFRUTCOREWATRRUBRTWODWHEAMAIZGOLDDIAMFERTVE"
 	 "HICOPRWDPRPLASTOURPETRSCMTENSPFMSP"
-  204 * 178	 00 08 01 2B 00 12
-        "RAIL" // 00 Unpowered
-		"ELRL" // 01 Catenary
-		"3RDR" // 02 3rd rail
-		"3RDC" // 03 3rd rail & catenary
 
-        // 3rd rail legacy
+  // Define railtype translation table
+  204 * 178 00 // Action0
+            08 // Feature: global settings
+            01 // Number of properties to change
+            2B // Number of entries
+            00 // ID: ignored for global settings
+            12 // Property: railtype translation table
+
+        // Default tracks
+        "RAIL" // 00 Unpowered (diesel)
+        "ELRL" // 01 Catenary
+
+        // 3rd rail (non-standard)
+        "3RDR" // 02 3rd rail
+        "3RDC" // 03 3rd rail & catenary
+
+        // 3rd rail (non-standard; additional)
         "3LOW" // 04 low-speed
         "CLOW" // 05 low-speed & catenary
         "3MED" // 06 medium-speed
         "CMED" // 07 medium-speed & catenary
+
+        // Metro tracks (non-standard; 3rd rail)
         "MTRO" // 08
         "MTRC" // 09
         "MTRS" // 0A
@@ -341,7 +354,7 @@
         "MTRT" // 0C
 
         // standard 3rd rail
-		"SAA3" // 0D speed A
+        "SAA3" // 0D speed A
         "SBA3" // 0E speed B
         "SCA3" // 0F speed C
         "SDA3" // 10 speed D
@@ -353,7 +366,7 @@
         "SUA3" // 16 urban
 
         // standard 3rd rail & catenary
-		"SAAZ" // 17 speed A
+        "SAAZ" // 17 speed A
         "SBAZ" // 18 speed B
         "SCAZ" // 19 speed C
         "SDAZ" // 1A speed D
@@ -365,7 +378,7 @@
         "SUAZ" // 20 urban
 
         // standard catenary
-		"SAAE" // 21 speed A
+        "SAAE" // 21 speed A
         "SBAE" // 22 speed B
         "SCAE" // 23 speed C
         "SDAE" // 24 speed D
@@ -376,8 +389,9 @@
         "SSAE" // 29 subterranean
         "SUAE" // 2A urban
 
-		// 3rd rail available = 02 20
-		// catenary available = 01 01, 03 03, 05 05, 07 07, 17 2A
+        // 3rd rail available = 02 20
+        // catenary available = 01 01, 03 03, 05 05, 07 07, 17 2A
+
   205 * 11	 02 00 80 81 7D 01 00 FF 00 00 80
   206 * 28	 02 00 81 81 7D 01 20 FF \2u/ 1A 20 0A \2+ 7D 01 20 FF \2sto 1A 00 01 01 80 00 00 00 80 00
   207 * 27	 02 00 82 81 7D 01 20 FF \2u/ 1A 20 03 \2* 1A 20 02 \2sto 1A 00 01 01 80 00 00 00 80 00
