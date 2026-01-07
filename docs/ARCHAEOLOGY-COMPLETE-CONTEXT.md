@@ -23,7 +23,18 @@ UKRS2 needs to detect what track type the train is currently on and adjust power
 - **Present**: UKRS2 still uses Variable 4A, requiring manual updates for new track sets
 
 ### The GRFID Change
-When CMircea forked UKRS2, the GRF ID was changed from PikkaBird's original to `"MCX" 00`. This broke wagon compatibility for A-Train vehicles until the `89 25` / `8A 25` checks throughout the NFO were also updated. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story.
+
+When CMircea forked UKRS2, the GRF ID was changed from PikkaBird's original to `"MCX" 00`. This broke wagon compatibility for A-Train vehicles.
+
+PikkaBird's response in the [forum thread](https://www.tt-forums.net/viewtopic.php?t=45637&start=1060) (Feb 2018):
+
+> Oops, yeah, the MUs all check the GRFID as part of the allowed wagon check. **BAD FEATURES, eh?**
+>
+> The magical number to check for is "89 25" to find these sprites... "8A 25" will get you [the coach liveries].
+>
+> Are you getting the feeling this is more trouble than it's worth yet?
+
+PikkaBird knew exactly what needed fixing - he wrote the original code. The `89 25` and `8A 25` patterns were the key to finding all GRFID-dependent checks. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story.
 
 ## Understanding NFO Format
 

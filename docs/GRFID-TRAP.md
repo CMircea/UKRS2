@@ -8,6 +8,8 @@ The GRF ID was changed from PikkaBird's original to `"MCX" 00` for the community
 
 ## History
 
+**Forum thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637&start=1060) (pages 54-56)
+
 ```
 PikkaBird's original: "DD" 10 00 (or similar)
          ↓
@@ -15,15 +17,24 @@ CMircea changes it to "MCX" 00 for the bugfix fork
          ↓
 A-Train wagons break - won't accept High-Speed Carriages
          ↓
-PikkaBird: "Are you getting the feeling
-            this is more trouble than it's worth yet?"
-         ↓
-CMircea: *figures out the 89 25 / 8A 25 checks*
+PikkaBird tells CMircea the magic numbers...
          ↓
 CMircea: *fixes wagon compatibility*
          ↓
 It works!
 ```
+
+### The Forum Post That Saved the Day
+
+> **PikkaBird** » 21 Feb 2018 11:08
+>
+> Oops, yeah, the MUs all check the GRFID as part of the allowed wagon check. **BAD FEATURES, eh?**
+>
+> The magical number to check for is "89 25" to find these sprites; if you update the GRFID there too it should fix the issue. A bunch of coach liveries also use ID checks for graphics and/or property callbacks in certain consists. "8A 25" will get you those sprites.
+>
+> Are you getting the feeling this is more trouble than it's worth yet?
+
+PikkaBird knew exactly what needed fixing - he wrote the original code. The "89 25" and "8A 25" patterns are the key to finding all the GRFID-dependent checks.
 
 ## Understanding the Magic Numbers
 
@@ -81,7 +92,7 @@ Coaches check the front vehicle's GRF ID for livery selection:
 | `89 25` | Related object's GRFID | [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) |
 | `8A 25` | Related object's GRFID (alt scope) | [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) |
 
-To find them all:
+To find them all (as PikkaBird said):
 ```bash
 grep -n "89 25\|8A 25" ukrs2.nfo
 ```
@@ -112,10 +123,13 @@ If you change the main set's GRF ID, update this too or the add-on won't load.
 
 ## Lesson Learned
 
-It's possible to change the GRFID. It's just tedious. The `89 25` and `8A 25` patterns are your friends for finding what needs updating.
+It's possible to change the GRFID. It's just tedious. As PikkaBird said: **"BAD FEATURES, eh?"**
+
+The `89 25` and `8A 25` patterns are your friends for finding what needs updating.
 
 ## References
 
+- [UKRS2 Forum Thread](https://www.tt-forums.net/viewtopic.php?t=45637&start=1060) - The original discussion (pages 54-56)
 - [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) - Type bytes (81, 82, 89, 8A, etc.)
 - [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles) - Variable 25 (GRFID)
 - [Action 7](https://newgrf-specs.tt-wiki.net/wiki/Action7) - Variable 88 (GRFID active check)
