@@ -178,47 +178,7 @@ If ANY label exists, execution jumps to label 55, skipping the "hide vehicle" ac
 
 ## GRFID Checks: 89 25 / 8A 25
 
-### Variable 25: GRFID
-
-Variable 0x25 returns the 4-byte GRFID of a vehicle. Combined with type byte 89 or 8A, it checks the related object's GRFID.
-
-### Byte-Level Analysis
-
-```nfo
-624 * 23  02 00 50 8A 25 00 FF FF FF FF 01 50 00 4D 43 58 00 4D 43 58 00 01 00
-                                              └─────────────┘ └─────────────┘
-                                              "MCX" 00 (min)   "MCX" 00 (max)
-```
-
-Wait, let me re-examine. The grep showed:
-```
-02 00 50 8A 25 00 "····" 01 50 00 "MCX" 00 "MCX" 01 01 00
-```
-
-The `"····"` is 4 bytes (the mask), displayed as dots because they're non-printable. This is likely `FF FF FF FF` (full GRFID comparison).
-
-### Pattern Breakdown
-
-```nfo
-02 00 50 8A 25 00 [mask] 01 [result] [min_grfid] [max_grfid] [default]
-│  │  │  │  │  │    │    │     │         │            │          │
-│  │  │  │  │  │    │    │     │         │            │          └── Default callback
-│  │  │  │  │  │    │    │     │         │            └── Range max (GRFID)
-│  │  │  │  │  │    │    │     │         └── Range min (GRFID)
-│  │  │  │  │  │    │    │     └── Result if in range
-│  │  │  │  │  │    │    └── Range count
-│  │  │  │  │  │    └── 4-byte mask
-│  │  │  │  │  └── Shift
-│  │  │  │  └── Variable 25 (GRFID)
-│  │  │  └── Type 8A (related object)
-│  │  └── Set ID
-│  └── Feature: trains
-└── Action 2
-```
-
-This checks if the related vehicle's GRFID matches "MCX" 00. Used for:
-- Wagon compatibility (ensuring wagons belong to UKRS2)
-- Livery selection (checking if front vehicle is from same GRF)
+The `89 25` and `8A 25` patterns are VarAction2 checks for wagon compatibility and livery selection. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full explanation, history, and byte breakdown.
 
 ## Callback Chains: Following the Flow
 
@@ -322,10 +282,7 @@ Sprites 41+:      Additional vehicles (Eurostar, etc.)
 
 ### Change GRFID
 
-1. **Main set** (sprite 32): Change `"MCX" 00` to new value
-2. **All `89 25` checks**: `grep -n "89 25" ukrs2.nfo` → update each
-3. **All `8A 25` checks**: `grep -n "8A 25" ukrs2.nfo` → update each
-4. **Add-on dependency** (sprite 38): Update GRFID value
+See [GRFID-TRAP.md](GRFID-TRAP.md) for the full procedure and history.
 
 ## Debugging Tips
 

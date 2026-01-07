@@ -35,9 +35,7 @@ UKRS2 needs to detect what track type the train is currently on and adjust power
 
 ### The GRFID Change
 
-The original GRFID was `"DD" 10 00` (hex: `44 44 10 00`). David Dallaston (credited as coder in the GRF description) requested the change to `"MCX" 00` for the community bugfix fork.
-
-This broke wagon compatibility for A-Train and other MU vehicles.
+When the GRFID was changed from `"DD" 10 00` to `"MCX" 00`, it broke wagon compatibility. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story, including the forum quotes and fix.
 
 ### The Forum Thread That Made It Happen
 
@@ -46,20 +44,8 @@ This broke wagon compatibility for A-Train and other MU vehicles.
 **PikkaBird's rail table post** (Feb 18, 2018):
 > Here's the rail table from UKRS2... I guess all you'd have to do is replace the 16 **"nutracks nonsense"** labels with the updated equivalents.
 
-**CMircea discovers the GRFID trap** (Feb 21, 2018):
-> It looks like if I change the GRF ID the A-Train breaks - it doesn't accept High-Speed Carriages anymore :(
-
-**PikkaBird's response** (Feb 21, 2018 11:08):
-> Oops, yeah, the MUs all check the GRFID as part of the allowed wagon check. **BAD FEATURES, eh?**
->
-> The magical number to check for is "89 25" to find these sprites; if you update the GRFID there too it should fix the issue. A bunch of coach liveries also use ID checks for graphics and/or property callbacks in certain consists. "8A 25" will get you those sprites.
->
-> Are you getting the feeling this is more trouble than it's worth yet?
-
 **CMircea on NFO** (Feb 23, 2018):
 > deciphering NFO without any comments is a real pain in the arse
-
-PikkaBird knew exactly what needed fixing - he wrote the original code. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story.
 
 ## Understanding NFO Format
 
