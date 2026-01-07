@@ -1026,6 +1026,8 @@
   621 * 9	 02 00 00 01 01 00 00 00 00
   622 * 9	 02 00 01 01 01 01 00 01 00
   623 * 18	 02 00 50 82 C6 00 FF 02 B0 8A 4D 4D B0 8A 50 50 AD 8A
+// 8A 25 = Check GRFID of related object (front vehicle) for livery selection
+// This ensures coaches show correct livery when attached to UKRS2 locomotives
   624 * 23	 02 00 50 8A 25 00 "����" 01 50 00 "MCX" 00 "MCX" 01 01 00
   625 * 14	 02 00 20 81 0C 00 FF 01 50 00 2D 2D 01 00
   626 * 15	 02 00 01 81 7F 02 00 02 01 20 00 02 02 01 00
@@ -11014,7 +11016,15 @@
 10405 * 15	 02 00 05 82 60 1D 00 FF 01 00 84 00 00 E9 80
 10406 * 22	 02 00 A2 81 C6 00 FF 03 05 00 05 05 1D 00 1D 1D EA 80 6A 6A E8 80
 
-// Check wagon compatibility
+// ============================================================================
+// GRFID WAGON COMPATIBILITY CHECK (89 25 pattern)
+// ============================================================================
+// VarAction2 type 89 accesses "related object" variables (the other vehicle)
+// Variable 25 returns the GRFID of that vehicle
+// This ensures wagons are from UKRS2 ("MCX" 00) and not random wagon #38 from another GRF
+// If you change the main set GRFID, you must update ALL 89 25 / 8A 25 patterns
+// See docs/GRFID-TRAP.md for why this matters
+// ============================================================================
 10407 * 23	 02 00 A2 89 25 00 "����" 01 A2 00 "MCX" 00 "MCX" 00 E8 80
 10408 * 15	 02 00 A2 81 7F 06 00 0F 01 A2 00 02 03 00 84
 10409 * 14	 02 00 A5 81 0C 00 FF 01 A2 00 1D 1D A5 00

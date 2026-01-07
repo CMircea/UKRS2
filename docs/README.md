@@ -27,7 +27,7 @@ This requires complex detection logic to determine what track type the train is 
 | File | Description |
 |------|-------------|
 | [AFFECTED-VEHICLES.md](AFFECTED-VEHICLES.md) | List of vehicles with railtype-dependent behavior |
-| [GRFID-TRAP.md](GRFID-TRAP.md) | Why the GRF ID cannot be changed |
+| [GRFID-TRAP.md](GRFID-TRAP.md) | The GRFID change history and 89 25 / 8A 25 patterns |
 
 ### Maintenance Guides
 
@@ -35,6 +35,13 @@ This requires complex detection logic to determine what track type the train is 
 |------|-------------|
 | [FIXING-COMPATIBILITY.md](FIXING-COMPATIBILITY.md) | Step-by-step guide to fix railtype compatibility issues |
 | [VARIABLE-63-MODERN-FIX.md](VARIABLE-63-MODERN-FIX.md) | Modern approach using Variable 63 (OpenTTD 1.11+) |
+
+### Archaeology (Comprehensive Context)
+
+| File | Description |
+|------|-------------|
+| [ARCHAEOLOGY-COMPLETE-CONTEXT.md](ARCHAEOLOGY-COMPLETE-CONTEXT.md) | Complete context document for future maintainers |
+| [ARCHAEOLOGY-NFO-DEEP-DIVE.md](ARCHAEOLOGY-NFO-DEEP-DIVE.md) | Byte-level NFO structure analysis |
 
 ## Quick Reference
 
