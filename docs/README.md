@@ -73,8 +73,10 @@ This requires complex detection logic to determine what track type the train is 
 
 ## Historical Notes
 
-- UKRS2 v1.06 was released in 2010
-- Variable 63 was added to OpenTTD in version 1.11 (2021)
+- PikkaBird released UKRS2 **v1.05** on Jan 2, 2013 (the last official version)
+- CMircea forked it in Feb 2018 as "UKRS2 - Community Bugfixes"
+- CMircea released **v1.06** on Sept 7, 2020 with full standard railtype support
+- Variable 63 was added to OpenTTD in version 1.11 (2021) - too late for UKRS2's architecture
 - The original code uses Variable 4A, which requires enumerating all possible railtype labels
 - Modern track sets use the Standardized Railtype Scheme, which UKRS2 now supports
 

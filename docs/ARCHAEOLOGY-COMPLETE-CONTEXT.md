@@ -15,26 +15,51 @@ UKRS2 needs to detect what track type the train is currently on and adjust power
 
 ## The Historical Context
 
-### Timeline
-- **2010**: PikkaBird releases UKRS2 v1.06 with Variable 4A-based power detection
-- **~2012**: CMircea forks UKRS2 for community bugfixes, changes GRFID to "MCX" 00
-- **2015+**: Standardized Railtype Scheme introduces modern track labels (SAA3, SAAZ, etc.)
-- **2021**: OpenTTD 1.11 adds Variable 63 (modern solution that doesn't exist in UKRS2)
-- **Present**: UKRS2 still uses Variable 4A, requiring manual updates for new track sets
+### Timeline (from git history and forum)
+
+| Date | Event |
+|------|-------|
+| **Jan 2, 2013** | PikkaBird releases UKRS2 **v1.05** (the last official version) |
+| **May 2017** | NekoMaster reports speed issues with NuTracks - trains limited to 160 km/h |
+| **Feb 16, 2018** | CMircea asks PikkaBird how to fix railtype compatibility |
+| **Feb 18, 2018** | PikkaBird [posts the rail table](https://www.tt-forums.net/viewtopic.php?p=1202856#p1202856) with "nutracks nonsense" labels |
+| **Feb 21, 2018** | CMircea discovers GRFID change breaks A-Train wagons |
+| **Feb 21, 2018 11:08** | PikkaBird's "BAD FEATURES, eh?" post with 89 25 / 8A 25 magic numbers |
+| **Feb 22, 2018 23:45** | CMircea commits GRFID change (same day as PikkaBird's post!) |
+| **Feb 22, 2018 23:46** | CMircea fixes 89 25 / 8A 25 wagon compatibility checks |
+| **Feb 23, 2018** | CMircea releases "UKRS2 - Community Bugfixes" on BaNaNaS |
+| **Sept 7, 2020** | CMircea releases **v1.06** with full standard railtype support |
+| **2021** | OpenTTD 1.11 adds Variable 63 (too late for UKRS2's architecture) |
+
+**Key insight**: The entire fork happened in ONE WEEK after PikkaBird provided guidance.
 
 ### The GRFID Change
 
-When CMircea forked UKRS2, the GRF ID was changed from PikkaBird's original to `"MCX" 00`. This broke wagon compatibility for A-Train vehicles.
+The original GRFID was `"DD" 10 00` (hex: `44 44 10 00`). David Dallaston (credited as coder in the GRF description) requested the change to `"MCX" 00` for the community bugfix fork.
 
-PikkaBird's response in the [forum thread](https://www.tt-forums.net/viewtopic.php?t=45637&start=1060) (Feb 2018):
+This broke wagon compatibility for A-Train and other MU vehicles.
 
+### The Forum Thread That Made It Happen
+
+**Thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56)
+
+**PikkaBird's rail table post** (Feb 18, 2018):
+> Here's the rail table from UKRS2... I guess all you'd have to do is replace the 16 **"nutracks nonsense"** labels with the updated equivalents.
+
+**CMircea discovers the GRFID trap** (Feb 21, 2018):
+> It looks like if I change the GRF ID the A-Train breaks - it doesn't accept High-Speed Carriages anymore :(
+
+**PikkaBird's response** (Feb 21, 2018 11:08):
 > Oops, yeah, the MUs all check the GRFID as part of the allowed wagon check. **BAD FEATURES, eh?**
 >
-> The magical number to check for is "89 25" to find these sprites... "8A 25" will get you [the coach liveries].
+> The magical number to check for is "89 25" to find these sprites; if you update the GRFID there too it should fix the issue. A bunch of coach liveries also use ID checks for graphics and/or property callbacks in certain consists. "8A 25" will get you those sprites.
 >
 > Are you getting the feeling this is more trouble than it's worth yet?
 
-PikkaBird knew exactly what needed fixing - he wrote the original code. The `89 25` and `8A 25` patterns were the key to finding all GRFID-dependent checks. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story.
+**CMircea on NFO** (Feb 23, 2018):
+> deciphering NFO without any comments is a real pain in the arse
+
+PikkaBird knew exactly what needed fixing - he wrote the original code. See [GRFID-TRAP.md](GRFID-TRAP.md) for the full story.
 
 ## Understanding NFO Format
 
@@ -67,7 +92,14 @@ When you see `"3RDRU"` in decompiled NFO, it's actually `"3RDR" + 55`:
                        ↑↑↑↑↑  ↑↑
                        Label  Jump target (decimal 55 = ASCII 'U')
 ```
-grfcodec displays byte 55 as 'U'. The actual label is "3RDR", and 55 is the Action 7 jump target.
+
+CMircea asked about this in the forum (Feb 19, 2018):
+> What I don't understand are the sprites 9931 through 9941 - they are missing the # of sprites to jump over, as well as having a "U" at the end of the rail type. Why?
+
+**PikkaBird's explanation** (Feb 20, 2018):
+> The "U" is the byte label 55, which grfcodec has **inappropriately converted to an ASCII character**.
+
+The actual label is "3RDR", and 55 is the Action 7 jump target (label ID to skip to).
 
 ## The Two Detection Methods
 

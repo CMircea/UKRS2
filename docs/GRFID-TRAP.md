@@ -2,27 +2,32 @@
 
 ## The Problem
 
-The GRF ID was changed from PikkaBird's original to `"MCX" 00` for the community bugfix fork. This broke A-Train wagon compatibility until the `89 25` / `8A 25` checks were also updated.
+The GRF ID was changed from PikkaBird's original `"DD" 10 00` (hex: `44 44 10 00`) to `"MCX" 00` for the community bugfix fork. This broke A-Train wagon compatibility until the `89 25` / `8A 25` checks were also updated.
 
 **Don't change it AGAIN** unless you're prepared to find and update all the GRFID-dependent checks.
 
 ## History
 
-**Forum thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637&start=1060) (pages 54-56)
+**Forum thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56)
 
 ```
-PikkaBird's original: "DD" 10 00 (or similar)
+PikkaBird's original GRFID: "DD" 10 00 (hex: 44 44 10 00)
+Add-on set GRFID:           "DD" 10 01 (one byte higher)
          ↓
-CMircea changes it to "MCX" 00 for the bugfix fork
+David Dallaston requests GRFID change for the bugfix fork
+         ↓
+CMircea changes it to "MCX" 00
          ↓
 A-Train wagons break - won't accept High-Speed Carriages
          ↓
-PikkaBird tells CMircea the magic numbers...
+PikkaBird tells CMircea the magic numbers (89 25 / 8A 25)
          ↓
-CMircea: *fixes wagon compatibility*
+CMircea fixes wagon compatibility (24 lines changed!)
          ↓
-It works!
+It works! Released on BaNaNaS Feb 23, 2018
 ```
+
+**Note**: David Dallaston is credited as coder in the GRF description. The git commit says "Change GRF ID (as per David's request)".
 
 ### The Forum Post That Saved the Day
 

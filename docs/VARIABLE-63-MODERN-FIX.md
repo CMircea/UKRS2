@@ -4,7 +4,7 @@
 
 Variable 63 was added in OpenTTD 1.11 (released 2021) as a better way to check railtype compatibility. Instead of enumerating every possible track type label, you can ask "would a vehicle of type X be powered on this tile?"
 
-**Important**: UKRS2 v1.06 was released in 2010, ONE YEAR before OpenTTD 1.11. The original code uses Variable 4A because Variable 63 didn't exist yet.
+**Important**: PikkaBird's UKRS2 v1.05 was released in 2013. CMircea's community bugfix fork (v1.06) was released in Sept 2020. Variable 63 was added to OpenTTD 1.11 in 2021. The original code uses Variable 4A because Variable 63 didn't exist during UKRS2's active development.
 
 ## Variable 63: Track Type Test
 
