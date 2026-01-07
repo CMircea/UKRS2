@@ -25,35 +25,61 @@ CMircea: *fixes wagon compatibility*
 It works!
 ```
 
-## What Breaks When You Change the GRFID
+## Understanding the Magic Numbers
 
-### 1. MU Wagon Compatibility (`89 25`)
+The `89 25` and `8A 25` patterns are VarAction2 checks that read the GRFID of related vehicles.
 
-Multiple unit trains check the GRF ID of attached wagons:
+### Breaking Down the Bytes
+
+```
+89 25
+│  └── Variable 25 (0x25): GRFID of the vehicle
+└── VarAction2 type 89: access "related object" variables
+```
+
+**VarAction2 Types** (see [VarAction2 specs](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2)):
+- `81` = access variables of current vehicle
+- `82` = access variables of lead vehicle in consist
+- `89` = access variables of "related object" (for articulated parts, this is the leading part)
+- `8A` = access variables of "related object" with different scope
+
+**Variable 25** (see [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles)):
+- Returns the GRFID of the vehicle being checked
+- Used to verify wagons belong to the same GRF as the locomotive
+
+### MU Wagon Compatibility (`89 25`)
+
+Multiple unit trains check the GRF ID of attached wagons to ensure they're from UKRS2, not some random wagon #38 from another GRF:
 
 ```nfo
 // Check wagon compatibility
 02 00 A2 89 25 00 "····" 01 A2 00 "MCX" 00 "MCX" 00 E5 80
-                                   ↑↑↑↑↑↑↑  ↑↑↑↑↑↑↑
-                                   These must match the Action 8 GRFID
+         ↑↑ ↑↑                     ↑↑↑↑↑↑↑  ↑↑↑↑↑↑↑
+         │  │                      │        └── GRFID value to compare
+         │  │                      └── GRFID value to compare
+         │  └── Variable 25: GRFID
+         └── Type 89: related object
 ```
 
 If the GRFID in Action 8 doesn't match the GRFIDs in these checks, wagons become "incompatible" with their locomotives.
 
-### 2. Coach Livery Graphics (`8A 25`)
+### Coach Livery Graphics (`8A 25`)
 
 Coaches check the front vehicle's GRF ID for livery selection:
 
 ```nfo
 02 00 50 8A 25 00 "····" 01 50 00 "MCX" 00 "MCX" 01 20 00
+         ↑↑ ↑↑
+         │  └── Variable 25: GRFID
+         └── Type 8A: related object (different scope)
 ```
 
-## Magic Numbers to Search For
+## Finding All GRFID Checks
 
-| Pattern | Meaning | Count |
-|---------|---------|-------|
-| `89 25` | Wagon compatibility checks | ~15 in ukrs2.nfo |
-| `8A 25` | Coach livery checks | ~15 in ukrs2.nfo |
+| Pattern | Meaning | Spec Reference |
+|---------|---------|----------------|
+| `89 25` | Related object's GRFID | [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) |
+| `8A 25` | Related object's GRFID (alt scope) | [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) |
 
 To find them all:
 ```bash
@@ -71,15 +97,25 @@ grep -n "89 25\|8A 25" ukrs2.nfo
 
 ## Add-on Set Dependency
 
-The add-on set checks for the main set's GRF ID:
+The add-on set checks for the main set's GRF ID using Action 7:
 
 ```nfo
 // Check if UKRS2 main set is active
 38 * 9  07 88 04 \7G "MCX" 00 01
+            ↑↑
+            └── Variable 88: check if GRFID is active
 ```
+
+See [Action 7](https://newgrf-specs.tt-wiki.net/wiki/Action7) for the condition codes.
 
 If you change the main set's GRF ID, update this too or the add-on won't load.
 
 ## Lesson Learned
 
 It's possible to change the GRFID. It's just tedious. The `89 25` and `8A 25` patterns are your friends for finding what needs updating.
+
+## References
+
+- [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2) - Type bytes (81, 82, 89, 8A, etc.)
+- [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles) - Variable 25 (GRFID)
+- [Action 7](https://newgrf-specs.tt-wiki.net/wiki/Action7) - Variable 88 (GRFID active check)
