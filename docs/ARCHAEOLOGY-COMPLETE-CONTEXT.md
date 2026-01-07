@@ -70,23 +70,6 @@ NFO has no functions, no includes, no macros. If two vehicles need the same call
 - Each affected vehicle must be found and updated individually
 - "Similar" code may have subtle differences
 
-### The "U" Artifact
-
-When you see `"3RDRU"` in decompiled NFO, it's actually `"3RDR" + 55`:
-```nfo
-9491 * 9    07 00 04 0E "3RDR" 55
-                       ↑↑↑↑↑  ↑↑
-                       Label  Jump target (decimal 55 = ASCII 'U')
-```
-
-CMircea asked about this in the forum (Feb 19, 2018):
-> What I don't understand are the sprites 9931 through 9941 - they are missing the # of sprites to jump over, as well as having a "U" at the end of the rail type. Why?
-
-**PikkaBird's explanation** (Feb 20, 2018):
-> The "U" is the byte label 55, which grfcodec has **inappropriately converted to an ASCII character**.
-
-The actual label is "3RDR", and 55 is the Action 7 jump target (label ID to skip to).
-
 ## The Two Detection Methods
 
 ### Variable 4A: Current UKRS2 Approach

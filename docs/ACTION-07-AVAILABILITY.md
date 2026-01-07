@@ -102,22 +102,6 @@ Label 55: // Success - vehicle is available
 //        └── Action 10: define label
 ```
 
-## The "U" Artifact
-
-When viewing decompiled code, you might see things like:
-```
-"3RDRU"
-```
-
-This is NOT a 5-character label! The `U` (byte 0x55) is actually the jump target:
-```
-"3RDR" 55
-│      └── Jump target: label 55 (0x55 = 85 decimal, or label ID)
-└── 4-character label
-```
-
-This is a common source of confusion when reading NFO files.
-
 ## Property 06: Climate Availability
 
 ```nfo
