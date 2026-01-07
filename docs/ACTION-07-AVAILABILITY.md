@@ -142,9 +142,3 @@ To support a new 3rd rail track type label:
    07 00 04 0E "NEWR" 55
    ```
 3. Position it before the "hide vehicle" sprite (9522)
-
-## Alternative: Using Action 09
-
-Action 09 is similar to Action 07 but continues loading regardless of condition outcome. It's used for in-game version checks rather than load-time decisions.
-
-See also: [VARACTION2-CALLBACKS.md](VARACTION2-CALLBACKS.md) for runtime checks
