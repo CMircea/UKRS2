@@ -1,0 +1,117 @@
+Hello! I'm struggling to figure out how to use Action7 to implement if then else-if logic. I want to set a tracktype for a train, if that is not available use another, if that isn't available either, use a fallback.
+
+Currently the train has tracktype set to 3RDC, but if that is not available, ELRL is set:
+
+[code]
+Pseudocode:
+-----------
+set track type to 3RDC
+
+if rail type 3RDC is not available
+    set track type to ELRL
+
+NML equivalent:
+---------------
+if (railtype_available("3RDC")) {
+    track_type: "3RDC"
+} else {
+    track_type: SAAZ
+}
+
+Actual NFO:
+----------
+<num> * 7    00 // Action0
+             00 // Feature: trains
+             01 // Number of props to change
+             01 // Number of vehicles to change
+             <id> // Vehicle ID
+             05 // Property: track type
+             03 // Index in rail type table: 3RDC
+             
+<num> * 9    07 // Action7
+             00 // Variable: ignored for this condition
+             04 // Var size in bytes
+             0E // Condition: rail type is defined
+             "3RDC" // Value: rail type label
+             01 // Number of sprites to skip
+
+<num> * 7    00 // Action0
+             00 // Feature: trains
+             01 // Number of props to change
+             01 // Number of vehicles to change
+             <id> // Vehicle ID
+             05 // Property: track type
+             01 // Index in rail type table: ELRL
+[/code]
+
+However, I also need to check if SAAZ is available, to use that if 3RDC is not, but keep the ELRL fallback if neither are available. Like this:
+
+[code]
+Pseudocode:
+-----------
+set track type to 3RDC
+
+if rail type 3RDC is not available
+    if rail type SAAZ is not available
+        set track type to ELRL
+    else
+        set track type  to SAAZ
+
+NML equivalent:
+---------------
+if (railtype_available("3RDC")) {
+    track_type: "3RDC"
+} else {
+    if (railtype_available(SAAZ)) {
+        track_type: SAAZ
+    } else {
+        track_type: ELRL
+    }
+}
+[/code]
+
+Action7 can be used to jump a fixed number of sprites (or to a label) based on the "is railtype defined" or "is railtype not defined" conditions. I came up with this:
+
+[code]
+<num> * 7    00 // Action0
+             00 // Feature: trains
+             01 // Number of props to change
+             01 // Number of vehicles to change
+             <id> // Vehicle ID
+             05 // Property: track type
+             03 // Index in rail type table: 3RDC
+
+// If rail type 3RDC is defined skip next 3 sprites
+<num> * 9    07 // Action7
+             00 // Variable; ignored for this condition
+             04 // 4 bytes
+             0E // Condition: Rail type label is defined
+             "3RDC" // Value: rail type
+             03 // Number of sprites to skip
+
+// If rail type SAAZ is defined skip next sprite
+<num> * 9    07 // Action7
+             00 // Variable; ignored for this condition
+             04 // 4 bytes
+             0E // Condition: Rail type label is defined
+             "SAAZ" // Value: rail type
+             01 // Number of sprites to skip
+
+// Set train track type to ELRL
+<num> * 7    00 // Action0
+             00 // Feature: trains
+             01 // Number of props to change
+             01 // Number of vehicles to change
+             <id> // Vehicle ID
+             05 // Property: track types
+             01 // Index in rail type table: ELRL
+
+// Set train railtype to SAAZ
+<num> * 7    00 // Action0
+             00 // Feature: trains
+             01 // Number of props to change
+             01 // Number of vehicles to change
+             <id> // Vehicle ID
+             05 // Property: track types
+             17 // Index in rail type table: SAAZ
+[/code]

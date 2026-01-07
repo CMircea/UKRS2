@@ -1,0 +1,81 @@
+        "RAIL" // 00 Unpowered
+		"ELRL" // 01 Catenary
+		"3RDR" // 02 3rd rail
+		"3RDC" // 03 3rd rail & catenary
+
+        // 3rd rail legacy
+        "3LOW" // 04 low-speed
+        "CLOW" // 05 low-speed & catenary
+        "3MED" // 06 medium-speed
+        "CMED" // 07 medium-speed & catenary
+        "MTRO" // 08
+        "MTRC" // 09
+        "MTRS" // 0A
+        "MTRU" // 0B
+        "MTRT" // 0C
+
+        // standard 3rd rail
+		"SAA3" // 0D speed A
+        "SBA3" // 0E speed B
+        "SCA3" // 0F speed C
+        "SDA3" // 10 speed D
+        "SEA3" // 11 speed E
+        "SFA3" // 12 speed F
+        "SGA3" // 13 speed G
+        "SHA3" // 14 speed H
+        "SSA3" // 15 subterranean
+        "SUA3" // 16 urban
+
+        // standard 3rd rail & catenary
+		"SAAZ" // 17 speed A
+        "SBAZ" // 18 speed B
+        "SCAZ" // 19 speed C
+        "SDAZ" // 1A speed D
+        "SEAZ" // 1B speed E
+        "SFAZ" // 1C speed F
+        "SGAZ" // 1D speed G
+        "SHAZ" // 1E speed H
+        "SSAZ" // 1F subterranean
+        "SUAZ" // 20 urban
+
+        // standard catenary
+		"SAAE" // 21 speed A
+        "SBAE" // 22 speed B
+        "SCAE" // 23 speed C
+        "SDAE" // 24 speed D
+        "SEAE" // 25 speed E
+        "SFAE" // 26 speed F
+        "SGAE" // 27 speed G
+        "SHAE" // 28 speed H
+        "SSAE" // 29 subterranean
+        "SUAE" // 2A urban
+
+		// 3rd rail available = 02 20
+		// catenary available = 01 01, 03 03, 05 05, 07 07, 17 2A
+
+
+
+set track type to 3RDC
+
+if rail type 3RDC is not available
+    if rail type SAAZ is not available
+        set track type to ELRL
+    else
+        set track type  to SAAZ
+
+
+
+
+
+
+set tracktype to 3RDC
+
+if rail type 3RDC is defined
+    skip 2 sprites
+
+if rail type SAAZ is defined
+    skip 1 sprite
+    
+set track type to ELRL
+
+set track type to SAAZ
