@@ -142,7 +142,7 @@ switch(FEAT_TRAINS, SELF, sw_class73_power,
 }
 ```
 
-**Why UKRS2 doesn't use it**: Variable 63 was added in 2021. UKRS2 v1.06 was released in 2010.
+**Why UKRS2 doesn't use it**: Variable 63 was added in 2021. UKRS2 v1.05 was released in 2013.
 
 ## The Affected Vehicles
 
