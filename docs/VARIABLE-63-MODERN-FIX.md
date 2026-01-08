@@ -8,29 +8,28 @@ Variable 63 was added in OpenTTD 1.11 (released 2021) as a better way to check r
 
 ## Variable 63: Track Type Test
 
+**Spec Reference**: [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles)
+
 ### What It Does
 
 Variable 63 answers the question: "Would a vehicle that requires railtype X be able to operate on the current tile?"
 
-### Parameters
+### Parameter
 
-The variable takes a parameter specifying which railtype to test:
-```
-Variable 63, Parameter = railtype index from translation table
-```
+Variable 63 is a **60+x variable** - it requires a parameter specifying which railtype to test. The parameter is the railtype index from your translation table.
 
 ### Result Flags
 
 The result is a bitmask:
 
-| Bit | Meaning |
-|-----|---------|
-| 0 | Track type is known to the game |
-| 1 | Track type is compatible (vehicle can travel on this tile) |
-| 2 | Track type is **powered** (vehicle would have power) |
-| 3 | Track type is identical (exact match) |
+| Bit | Value | Meaning |
+|-----|-------|---------|
+| 0 | 0x01 | Track type is known to the game |
+| 1 | 0x02 | Track type is compatible (vehicle can travel on this tile) |
+| 2 | 0x04 | Track type is **powered** (vehicle would have power) |
+| 3 | 0x08 | Track type is identical (exact match) |
 
-For power detection, you typically check bit 2.
+For power detection, check bit 2 (mask with 0x04).
 
 ## Why Variable 63 is Better
 
@@ -50,66 +49,109 @@ For power detection, you typically check bit 2.
 
 With Variable 63, you only need to define the railtypes you want to test for:
 
-```nml
-railtypetable {
-    RAIL,   // Baseline (unpowered)
-    ELRL,   // Catenary
-    SAA3,   // 3rd rail (modern standardized)
-    _3RDR   // 3rd rail (legacy) - note underscore prefix for labels starting with numbers
-}
+```nfo
+// Before: 43 entries (0x2B)
+419 * 178 00 08 01 2B 00 12 "RAIL" "ELRL" "3RDR" ... "SUAE"
+
+// After: 4 entries (0x04)
+419 * 22 00 08 01 04 00 12 "RAIL" "ELRL" "SAA3" "3RDR"
+//                ↑↑                      ↑↑↑↑↑  ↑↑↑↑↑
+//              4 entries            Index 0x02  Index 0x03
 ```
 
 That's **4 entries** instead of **43 entries**!
 
-## Example: Class 73 Power Callback
+## NFO Implementation
 
-### Current UKRS2 Approach (Variable 4A)
+### The Challenge: 60+x Variables Need Parameters
+
+Variable 63 is in the 60-7F range, meaning it takes a parameter. In NFO VarAction2, this parameter comes from the **accumulated value** in the calculation chain.
+
+**Spec Reference**: [VarAction2 Advanced Format](https://newgrf-specs.tt-wiki.net/wiki/VarAction2Advanced)
+
+### Method 1: Advanced VarAction2 with Chained Operations
+
+To check if railtype index 0x02 (SAA3) is powered:
+
 ```nfo
-// Check if railtype index is in range 0x02-0x20 (any 3rd rail)
-02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
+// Advanced VarAction2: load constant, then check Variable 63
+02 00 [set-id] 89
+   7B                   // Variable 7B = read constant from following bytes
+   20                   // shift-num: bit 5 set = add/div/mod follows
+   FF FF                // AND mask: 0xFFFF
+   00 00                // add: 0
+   01 00                // divide: 1 (no-op)
+   02 00                // constant value: 0x0002 (SAA3 index)
+   0C                   // operation: 0x0C = "use as parameter for next var"
+   63                   // Variable 63 (parameter = accumulated value = 0x02)
+   00                   // shift: 0
+   04                   // AND mask: 0x04 (bit 2 = powered)
+   01                   // 1 range
+   [result-lo] [result-hi] 04 04    // if masked value = 0x04 (powered)
+   [default-lo] [default-hi]        // if not powered
 ```
-Requires maintaining 43 entries in translation table and updating ranges.
 
-### Modern Approach (Variable 63)
-```nml
-switch(FEAT_TRAINS, SELF, sw_class73_power,
-       tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
-    1: return 1600;  // Electric power (kW)
-    0: return 600;   // Diesel power (kW)
-}
+**Byte breakdown**:
+- `89` = type: advanced format, byte-sized, related object scope
+- `7B` = Variable 7B (literal constant)
+- `20 FF FF 00 00 01 00 02 00` = load constant 0x0002
+- `0C` = store result and use as parameter for next variable
+- `63 00 04` = Variable 63, shift 0, mask 0x04 (bit 2)
+
+### Method 2: Check Multiple Railtypes with OR
+
+To check SAA3 OR 3RDR (for backwards compatibility):
+
+```nfo
+// Check SAA3 (index 0x02)
+02 00 [set-id-A] 89
+   7B 20 FF FF 00 00 01 00 02 00   // load 0x0002
+   0C                               // use as param
+   63 00 04                         // var 63, mask bit 2
+   01
+   01 00 04 04                      // result 1 if powered
+   00 00                            // result 0 if not
+
+// Check 3RDR (index 0x03)
+02 00 [set-id-B] 89
+   7B 20 FF FF 00 00 01 00 03 00   // load 0x0003
+   0C
+   63 00 04
+   01
+   01 00 04 04
+   00 00
+
+// Combine: return electric if either is powered
+02 00 [set-id-main] 81
+   7E [set-id-A] 00 FF             // call set-id-A
+   0D                               // OR with next
+   7E [set-id-B] 00 FF             // call set-id-B
+   01
+   [electric-cb] 01 01             // if result >= 1, electric
+   [diesel-cb]                      // else diesel
 ```
-Just test two railtypes and let the game handle equivalence.
 
-## Why You Need BOTH SAA3 and 3RDR
+### Comparison: Variable 4A vs Variable 63
 
-Legacy track sets (pre-2015) don't know about the Standardized Railtype Scheme. They use:
-- `3RDR` for 3rd rail
-- `3RDC` for 3rd rail + catenary
+**Variable 4A (current UKRS2)**:
+```nfo
+// Simple but requires 43-entry translation table and range maintenance
+9441 * 14  02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
+//         Check range 0x02-0x20, return 0x37 (electric) or 0x47 (diesel)
+```
 
-Modern track sets use:
-- `SAA3` for standard 3rd rail
-- `SAAZ` for 3rd rail + catenary
+**Variable 63**:
+```nfo
+// More complex per-check, but only needs 4-entry translation table
+// and automatically handles equivalence
+```
 
-By testing for BOTH, you cover:
-- Legacy track sets (respond to `3RDR`)
-- Modern track sets (respond to `SAA3`)
+## NML Implementation (Recommended)
 
-The game handles the equivalence within each scheme, but can't bridge the gap between schemes.
-
-## NML Functions
-
-| Function | Description |
-|----------|-------------|
-| `tile_powers_railtype(X)` | Returns 1 if vehicle type X would be powered |
-| `tile_supports_railtype(X)` | Returns 1 if vehicle type X could travel here |
-| `tile_is_railtype(X)` | Returns 1 if exact match (stricter) |
-
-For power detection, use `tile_powers_railtype()`.
-
-## Example: Full NML Conversion
+NML abstracts away the complexity of 60+x variables:
 
 ```nml
-// Translation table - only 4 entries needed!
+// Translation table - only 4 entries needed
 railtypetable {
     RAIL,   // Index 0: baseline
     ELRL,   // Index 1: catenary
@@ -117,7 +159,7 @@ railtypetable {
     _3RDR   // Index 3: 3rd rail (legacy)
 }
 
-// Class 73 power callback
+// Class 73 power callback - clean and readable
 switch(FEAT_TRAINS, SELF, sw_class73_power_check,
        tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
     1: return 1600;  // Electric: 1600 kW
@@ -127,35 +169,60 @@ switch(FEAT_TRAINS, SELF, sw_class73_power_check,
 // Catenary detection (for dual-voltage trains)
 switch(FEAT_TRAINS, SELF, sw_catenary_check,
        tile_powers_railtype(ELRL)) {
-    1: return HIGH_SPEED;   // Full speed on catenary
-    0: return LOW_SPEED;    // Reduced speed on 3rd rail
+    1: return HIGH_SPEED;
+    0: return LOW_SPEED;
 }
 ```
 
+**NML Functions**:
+
+| Function | Description |
+|----------|-------------|
+| `tile_powers_railtype(X)` | Returns 1 if vehicle type X would be powered |
+| `tile_supports_railtype(X)` | Returns 1 if vehicle type X could travel here |
+| `tile_is_railtype(X)` | Returns 1 if exact match (stricter) |
+
+## Why You Need BOTH SAA3 and 3RDR
+
+Legacy track sets (pre-2015) don't know about the Standardized Railtype Scheme:
+- `3RDR` for 3rd rail
+- `3RDC` for 3rd rail + catenary
+
+Modern track sets use:
+- `SAA3` for standard 3rd rail
+- `SAAZ` for 3rd rail + catenary
+
+The game handles equivalence **within** each scheme, but can't bridge between schemes. Test both for full compatibility.
+
 ## Migration Path
 
-To convert UKRS2 to use Variable 63:
+1. **Choose approach**: NML (recommended) or raw NFO
+2. **Simplify translation table**: 4 entries instead of 43
+3. **Replace Variable 4A checks**: Use Variable 63 with appropriate parameters
+4. **Test both legacy and modern labels**: SAA3 + 3RDR for 3rd rail, ELRL for catenary
+5. **Add version check**: Fall back to Variable 4A for OpenTTD < 1.11
 
-1. **Convert to NML** (recommended) or rewrite VarAction2 chains
-2. **Simplify translation table** to just the types you test for
-3. **Replace all Variable 4A checks** with `tile_powers_railtype()` calls
-4. **Test both legacy and modern labels** for backwards compatibility
-5. **Remove complex range calculations**
+### Version Check (Action 9)
+
+```nfo
+// Check OpenTTD version >= 1.11 (version 0x1B000000)
+09 9A 04 05 00 00 00 1B [skip]
+// If older, skip Variable 63 code and use Variable 4A fallback
+```
+
+**Spec Reference**: [Action 9](https://newgrf-specs.tt-wiki.net/wiki/Action9)
 
 ## Compatibility Notes
 
-- Variable 63 requires OpenTTD 1.11 or later
+- Variable 63 requires **OpenTTD 1.11** or later
 - Won't work in TTDPatch
 - Won't work in older OpenTTD versions
-
-If you need to support older versions, you could use Action 7/9 to detect the game version and use different code paths:
-```nfo
-// If OpenTTD >= 1.11, use Variable 63 code
-// Else, use Variable 4A code (legacy)
-```
+- Consider dual code paths if backwards compatibility needed
 
 ## References
 
-- [VarAction2/Vehicles - Variable 63](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles)
-- [NML:Vehicles - tile_powers_railtype](https://newgrf-specs.tt-wiki.net/wiki/NML:Vehicles#Vehicle_variables)
+- [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles) - Variable 63 definition
+- [VarAction2 Advanced](https://newgrf-specs.tt-wiki.net/wiki/VarAction2Advanced) - Chained operations format
+- [Action 9](https://newgrf-specs.tt-wiki.net/wiki/Action9) - Version checking
+- [NML:Vehicles](https://newgrf-specs.tt-wiki.net/wiki/NML:Vehicles#Vehicle_variables) - tile_powers_railtype
 - [Standardized Railtype Scheme](https://newgrf-specs.tt-wiki.net/wiki/Standardized_Railtype_Scheme)
