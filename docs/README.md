@@ -11,6 +11,48 @@ UKRS2 is a NewGRF for OpenTTD/TTDPatch that provides UK railway vehicles. Severa
 
 This requires complex detection logic to determine what track type the train is currently on.
 
+## Historical Context
+
+### Timeline
+
+| Date | Event |
+|------|-------|
+| **Jan 2, 2013** | PikkaBird releases UKRS2 **v1.05** (the last official version) |
+| **May 2017** | NekoMaster reports speed issues with NuTracks |
+| **Feb 16, 2018** | CMircea asks PikkaBird how to fix railtype compatibility |
+| **Feb 18, 2018** | PikkaBird [posts the rail table](https://www.tt-forums.net/viewtopic.php?p=1202856#p1202856) |
+| **Feb 22-23, 2018** | CMircea forks and releases "UKRS2 - Community Bugfixes" |
+| **Sept 7, 2020** | CMircea releases **v1.06** with full standard railtype support |
+| **2021** | OpenTTD 1.11 adds Variable 63 (too late for UKRS2's architecture) |
+
+**Key insight**: The entire fork happened in ONE WEEK after PikkaBird provided guidance.
+
+### The Forum Thread
+
+**Thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56)
+
+**PikkaBird** (Feb 18, 2018):
+> Here's the rail table from UKRS2... I guess all you'd have to do is replace the 16 **"nutracks nonsense"** labels with the updated equivalents.
+
+**CMircea** (Feb 23, 2018):
+> deciphering NFO without any comments is a real pain in the arse
+
+### The Core Problem
+
+Real British trains have complex power systems. UKRS2 needs to detect what track type the train is currently on and adjust power/speed accordingly. The original code uses Variable 4A (railtype index from a translation table), which requires manually enumerating all possible railtype labels. When new track sets appear with labels not in the table, detection fails.
+
+Modern track sets use the Standardized Railtype Scheme. UKRS2 v1.06 now supports these, but the architecture remains dependent on the translation table approach.
+
+## Understanding NFO
+
+NFO is **serialized binary data**, not a programming language. Key facts:
+
+- No functions, includes, or macros - callbacks are copy-pasted per vehicle
+- Little-endian byte order (`37 00` = 0x0037)
+- grfcodec adds human-readable sprite numbers and sizes
+
+This means fixing one vehicle doesn't automatically fix others - each must be updated individually.
+
 ## Documentation Files
 
 ### Core Concepts
@@ -26,22 +68,16 @@ This requires complex detection logic to determine what track type the train is 
 
 | File | Description |
 |------|-------------|
-| [AFFECTED-VEHICLES.md](AFFECTED-VEHICLES.md) | List of vehicles with railtype-dependent behavior |
+| [DUAL-POWER-VEHICLES.md](DUAL-POWER-VEHICLES.md) | List of vehicles with railtype-dependent behavior |
 | [GRFID-TRAP.md](GRFID-TRAP.md) | The GRFID change history and 89 25 / 8A 25 patterns |
+| [NFO-DECOMPILATION-ARTIFACTS.md](NFO-DECOMPILATION-ARTIFACTS.md) | grfcodec quirks (trailing 'U' in label checks) |
 
 ### Maintenance Guides
 
 | File | Description |
 |------|-------------|
-| [FIXING-COMPATIBILITY.md](FIXING-COMPATIBILITY.md) | Step-by-step guide to fix railtype compatibility issues |
+| [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md) | Step-by-step guide to fix railtype compatibility issues (includes NFO byte-level reference) |
 | [VARIABLE-63-MODERN-FIX.md](VARIABLE-63-MODERN-FIX.md) | Modern approach using Variable 63 (OpenTTD 1.11+) |
-
-### Archaeology (Comprehensive Context)
-
-| File | Description |
-|------|-------------|
-| [ARCHAEOLOGY-COMPLETE-CONTEXT.md](ARCHAEOLOGY-COMPLETE-CONTEXT.md) | Complete context document for future maintainers |
-| [ARCHAEOLOGY-NFO-DEEP-DIVE.md](ARCHAEOLOGY-NFO-DEEP-DIVE.md) | Byte-level NFO structure analysis |
 
 ## Quick Reference
 
@@ -70,15 +106,6 @@ This requires complex detection logic to determine what track type the train is 
 |----------|---------|
 | 0x4A | Current railtype index (deprecated but used in UKRS2) |
 | 0x63 | Railtype compatibility test (modern, OpenTTD 1.11+) |
-
-## Historical Notes
-
-- PikkaBird released UKRS2 **v1.05** on Jan 2, 2013 (the last official version)
-- CMircea forked it in Feb 2018 as "UKRS2 - Community Bugfixes"
-- CMircea released **v1.06** on Sept 7, 2020 with full standard railtype support
-- Variable 63 was added to OpenTTD in version 1.11 (2021) - too late for UKRS2's architecture
-- The original code uses Variable 4A, which requires enumerating all possible railtype labels
-- Modern track sets use the Standardized Railtype Scheme, which UKRS2 now supports
 
 ## External References
 

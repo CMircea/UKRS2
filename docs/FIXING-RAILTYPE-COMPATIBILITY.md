@@ -1,6 +1,85 @@
 # Fixing Railtype Compatibility Issues
 
-This is a step-by-step guide for fixing railtype compatibility problems in UKRS2.
+This guide explains how to fix railtype compatibility problems in UKRS2, including the historical context and technical foundations needed to understand the codebase.
+
+## Historical Context
+
+### Timeline
+
+| Date | Event |
+|------|-------|
+| **Jan 2, 2013** | PikkaBird releases UKRS2 **v1.05** (the last official version) |
+| **May 2017** | NekoMaster reports speed issues with NuTracks - trains limited to 160 km/h |
+| **Feb 16, 2018** | CMircea asks PikkaBird how to fix railtype compatibility |
+| **Feb 18, 2018** | PikkaBird [posts the rail table](https://www.tt-forums.net/viewtopic.php?p=1202856#p1202856) with "nutracks nonsense" labels |
+| **Feb 21, 2018** | CMircea discovers GRFID change breaks A-Train wagons |
+| **Feb 21, 2018** | PikkaBird explains 89 25 / 8A 25 patterns ("BAD FEATURES, eh?") |
+| **Feb 22, 2018** | CMircea commits GRFID change and 89 25 / 8A 25 fixes |
+| **Feb 23, 2018** | CMircea releases "UKRS2 - Community Bugfixes" on BaNaNaS |
+| **Sept 7, 2020** | CMircea releases **v1.06** with full standard railtype support |
+| **2021** | OpenTTD 1.11 adds Variable 63 (too late for UKRS2's architecture) |
+
+**Key insight**: The entire fork happened in ONE WEEK after PikkaBird provided guidance.
+
+### The Forum Thread
+
+**Thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56)
+
+**PikkaBird's rail table post** (Feb 18, 2018):
+> Here's the rail table from UKRS2... I guess all you'd have to do is replace the 16 **"nutracks nonsense"** labels with the updated equivalents.
+
+**CMircea on NFO** (Feb 23, 2018):
+> deciphering NFO without any comments is a real pain in the arse
+
+## Understanding NFO Format
+
+### NFO Is Not a Programming Language
+
+NFO is **serialized binary data** with human-readable annotations added by grfcodec:
+
+```nfo
+9441 * 14    02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
+↑      ↑     └──────────────────────────────────────┘
+│      │                    Actual bytes
+│      └── Size in bytes
+└── Sprite number
+```
+
+The bytes are the actual data. Everything else is presentation.
+
+### There Is No Code Reuse
+
+NFO has no functions, no includes, no macros. If two vehicles need the same callback logic, the bytes are literally copy-pasted. This means:
+- Fixing one vehicle doesn't automatically fix others
+- Each affected vehicle must be found and updated individually
+- "Similar" code may have subtle differences
+
+### Little-Endian Byte Order
+
+All multi-byte values use little-endian:
+- `37 00` = 0x0037 (decimal 55)
+- `20 00` = 0x0020 (decimal 32)
+
+## The Two Detection Methods
+
+### Variable 4A: Current UKRS2 Approach
+
+**How it works**:
+1. Define a "rail translation table" mapping labels to indexes
+2. At runtime, Variable 4A returns the current track's index from your table
+3. Use VarAction2 range checks to determine power source
+
+**The Problem**: If a new track set uses a label not in your table, Variable 4A returns 0 and the power detection fails.
+
+### Variable 63: Modern Solution (OpenTTD 1.11+)
+
+**How it works**:
+1. Ask the game "would a vehicle requiring railtype X be powered here?"
+2. The game handles all equivalence internally
+
+**Why UKRS2 doesn't use it**: Variable 63 was added in 2021. UKRS2 v1.05 was released in 2013.
+
+---
 
 ## Symptoms of Compatibility Issues
 
@@ -75,11 +154,11 @@ Location: Sprite 9441 (~line 9962)
 ```nfo
 // Before: range 0x02-0x20
 9441 * 14 02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
-                                          ↑↑ max
+                                         ↑↑ max
 
 // After: range 0x02-0x2B (assuming new label is 3rd rail)
 9441 * 14 02 00 37 81 4A 00 FF 01 37 00 02 2B 47 00
-                                          ↑↑ new max
+                                         ↑↑ new max
 ```
 
 #### For Catenary Track Types
@@ -101,12 +180,12 @@ Location: Sprite 10092 (~line 10616)
 ```nfo
 // Before: 5 ranges
 10092 * 30 02 00 11 81 4A 00 FF 05 01 00 01 01 ...
-                              ↑↑ 5 ranges
+                             ↑↑ 5 ranges
 
 // After: 6 ranges
 10092 * 34 02 00 11 81 4A 00 FF 06 01 00 01 01 ... 01 00 30 30
-                        ↑↑↑↑↑↑ ↑↑                  └──────────┘
-                        size+4  6 ranges            new range
+                       ↑↑↑↑↑↑ ↑↑                  └──────────┘
+                       size+4  6 ranges            new range
 ```
 
 ### Step 3: Update Action 7 Availability Chains
@@ -119,8 +198,6 @@ Location: Before sprite 9522 (~line 10043)
 // Add new check before the "hide vehicle" sprite
 9521.5 * 9 07 00 04 0E "NEWR" 55  // If NEWR defined, jump to label 55
 ```
-
-Alternatively, add it at any position before sprite 9522.
 
 ### Step 4: Compile and Test
 
@@ -194,6 +271,86 @@ tile_powers_railtype(ELRL)
 ### Step 5: Remove Complex Range Calculations
 
 No more maintaining 5-range catenary checks or 30-entry translation tables.
+
+---
+
+## NFO Byte-Level Reference
+
+### VarAction2 Type Bytes
+
+| Byte | Binary | Meaning |
+|------|--------|---------|
+| 81 | 1000 0001 | Basic byte variable, current vehicle |
+| 82 | 1000 0010 | Basic byte variable, lead vehicle |
+| 85 | 1000 0101 | Extended word variable, current vehicle |
+| 86 | 1000 0110 | Extended word variable, lead vehicle |
+| 89 | 1000 1001 | Basic byte, **related object** |
+| 8A | 1000 1010 | Basic byte, **related object (alt scope)** |
+
+Bit 3 (0x08) indicates "related object" scope.
+
+### Range Entry Format
+
+Each range is 4 bytes for byte variables:
+```
+[result_lo] [result_hi] [min] [max]
+```
+
+For Type JB power callback:
+```nfo
+37 00 02 20
+│  │  │  └── Max: 0x20
+│  │  └── Min: 0x02
+└──┴── Result: callback 0x0037
+```
+
+### Sprite 9441: Complete Disassembly
+
+```nfo
+9441 * 14  02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
+```
+
+| Offset | Bytes | Meaning |
+|--------|-------|---------|
+| 0 | 02 | Action 2 |
+| 1 | 00 | Feature: trains |
+| 2 | 37 | Set ID (this callback = 0x37) |
+| 3 | 81 | Type: basic byte, current vehicle |
+| 4 | 4A | Variable: railtype index |
+| 5 | 00 | Shift: 0 bits |
+| 6 | FF | Mask: 0xFF (full byte) |
+| 7 | 01 | Range count: 1 |
+| 8-11 | 37 00 02 20 | Range 1: result=0x37 if 0x02 ≤ var ≤ 0x20 |
+| 12-13 | 47 00 | Default: callback 0x47 |
+
+### Multi-Range Catenary Detection (Sprite 10092)
+
+```nfo
+10092 * 30  02 00 11 81 4A 00 FF 05 01 00 01 01 01 00 03 03 01 00 05 05 01 00 07 07 01 00 17 2A 11 00
+                             ↑↑ └─────────────────────────────────────────────────────────────────┘
+                             5 ranges: 01-01, 03-03, 05-05, 07-07, 17-2A
+```
+
+| Offset | Bytes | Meaning |
+|--------|-------|---------|
+| 7 | 05 | Range count: 5 |
+| 8-11 | 01 00 01 01 | Range 1: result=0x01 if var=0x01 (ELRL) |
+| 12-15 | 01 00 03 03 | Range 2: result=0x01 if var=0x03 (3RDC) |
+| 16-19 | 01 00 05 05 | Range 3: result=0x01 if var=0x05 (CLOW) |
+| 20-23 | 01 00 07 07 | Range 4: result=0x01 if var=0x07 (CMED) |
+| 24-27 | 01 00 17 2A | Range 5: result=0x01 if 0x17 ≤ var ≤ 0x2A |
+| 28-29 | 11 00 | Default: callback 0x11 |
+
+### Action 7 Label Check Format
+
+```nfo
+9491 * 9  07 00 04 0E "3RDR" 55
+          │  │  │  │  └────┴── Value: "3RDR", jump to label 55
+          │  │  │  └── Condition: 0E = label is defined
+          │  │  └── Size: 4 bytes
+          │  └── Variable: 00 (special: railtype label)
+          └── Action 7
+```
 
 ---
 
