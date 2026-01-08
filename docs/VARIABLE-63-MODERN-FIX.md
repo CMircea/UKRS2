@@ -59,28 +59,46 @@ switch(FEAT_TRAINS, SELF, sw_class73_power,
 }
 ```
 
-### Eurostar/A-Train - Catenary Speed
+### Eurostar/A-Train - Dual-Voltage Speed
 
-Full speed on catenary, reduced on 3rd-rail-only:
+Dual-voltage EMUs that run on either 3rd rail or catenary. Speed depends on power source (3rd rail = 750V DC limited, catenary = 25kV AC full power):
 
 ```nml
 switch(FEAT_TRAINS, SELF, sw_eurostar_speed,
        tile_powers_railtype(ELRL)) {
-    1: return 186;   // Catenary available - full speed
-    0: return 100;   // 3rd rail only - restricted
+    1: return 186;   // Catenary - full speed (25kV AC)
+    0: return 100;   // 3rd rail only - voltage limited (750V DC)
 }
 ```
 
+Note: The vehicle must already be on compatible track (3rd rail or catenary). This callback determines speed mode, not availability.
+
 ### Class 92 - Dual-Voltage Power
 
-Works on either catenary OR 3rd rail (more power on catenary):
+Dual-voltage freight locomotive, runs on either 3rd rail or catenary:
 
 ```nml
 switch(FEAT_TRAINS, SELF, sw_class92_power,
        tile_powers_railtype(ELRL) ||
        tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
-    1: return 5000;  // Electric mode
+    1: return 5000;  // Electric mode (either power source)
     0: return 0;     // No electric power available
+}
+```
+
+For differentiated power by voltage system, check catenary first:
+
+```nml
+switch(FEAT_TRAINS, SELF, sw_class92_power_detailed,
+       tile_powers_railtype(ELRL)) {
+    1: return 5000;  // Catenary - full power (25kV AC)
+    0: sw_class92_check_3rd_rail;  // Check 3rd rail
+}
+
+switch(FEAT_TRAINS, SELF, sw_class92_check_3rd_rail,
+       tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
+    1: return 4000;  // 3rd rail - reduced power (750V DC)
+    0: return 0;     // No electric power
 }
 ```
 
