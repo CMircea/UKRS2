@@ -10,8 +10,8 @@ This document lists all vehicles in UKRS2 that have railtype-dependent behavior.
 - **Real-world**: BR Class 73, capable of running on 3rd rail electric or diesel power
 
 ### Behavior
-- **Default mode**: Diesel power (600 kW equivalent)
-- **On 3rd rail**: Upgrades to electric power (1600 kW equivalent)
+- **On 3rd rail**: 1420 hp, 177 kN tractive effort, spark effects
+- **Diesel fallback**: 600 hp, 160 kN tractive effort, exhaust effects
 - **Availability**: Hidden if no 3rd rail track types exist
 
 ### Code Locations (ukrs2.nfo)
@@ -36,7 +36,7 @@ ELSE:
 
 ---
 
-## GEC-Alstom Eurostar (Electric)
+## GEC-Alstom Eurostar (Electric) — Add-on Set
 
 ### Basic Info
 - **Vehicle ID**: 0xFF 0x2B 0x01 (extended ID in ukrs2-addon.nfo)
@@ -44,8 +44,8 @@ ELSE:
 - **Real-world**: Eurostar, runs on both 3rd rail (750V DC) and overhead catenary (25kV AC)
 
 ### Behavior
-- **On 3rd rail**: Limited to 100 mph (161 km/h) - 3rd rail system limitation
-- **On catenary**: Full speed 186 mph (300 km/h)
+- **On catenary**: 186 mph, 16400 hp
+- **On 3rd rail**: 110 mph, 4600 hp
 - **Track preference**: Prefers 3RDC (3rd rail + catenary combined)
 
 ### Code Locations (ukrs2-addon.nfo)
@@ -73,9 +73,8 @@ ELSE:
 - **Real-world**: Modern UK EMU, dual-voltage capable
 
 ### Behavior
-- **On 3rd rail**: Standard operation
-- **On catenary**: Full operation
-- **Speed varies**: Based on power source available
+- **On catenary**: 155 mph
+- **On 3rd rail**: 100 mph
 
 ### Code Locations (ukrs2.nfo)
 | Sprite | Line | Purpose |
@@ -99,8 +98,8 @@ Same catenary detection as Eurostar - 5 disjoint ranges.
 - **Real-world**: Class 92, operates on 750V DC 3rd rail and 25kV AC catenary
 
 ### Behavior
-- **On 3rd rail**: Limited power
-- **On catenary**: Full power
+- **On catenary**: 6700 hp
+- **On 3rd rail**: 5360 hp
 - **Designed for**: Channel Tunnel freight
 
 ### Code Locations (ukrs2.nfo)
@@ -124,14 +123,62 @@ power = calculate_power(catenary_available, third_rail_available)
 
 ---
 
+## Bidwell Tripworker (Electric)
+
+### Basic Info
+- **Type**: Electric multiple unit
+- **Real-world**: Dual-voltage EMU
+
+### Behavior
+- Dual-voltage: operates on both 3rd rail and catenary
+
+---
+
+## ABB Class 325 (Electric)
+
+### Basic Info
+- **Type**: Electric multiple unit (mail/parcels)
+- **Real-world**: Class 325, dual-voltage postal EMU
+
+### Behavior
+- Dual-voltage: operates on both 3rd rail and catenary
+
+---
+
+## Electrostar (Electric)
+
+### Basic Info
+- **Type**: Electric multiple unit
+- **Real-world**: Bombardier Electrostar family, dual-voltage variants
+
+### Behavior
+- Dual-voltage: operates on both 3rd rail and catenary
+
+---
+
+## BREL Class 313 (Electric) — Add-on Set
+
+### Basic Info
+- **Type**: Electric multiple unit
+- **Real-world**: Class 313, dual-voltage suburban EMU
+
+### Behavior
+- Dual-voltage: operates on both 3rd rail and catenary
+
+---
+
 ## Summary Table
 
-| Vehicle | ID | 3rd Rail Check | Catenary Check | Speed Varies | Power Varies |
-|---------|-----|----------------|----------------|--------------|--------------|
-| Type JB (Class 73) | 0x79 | Yes (0x02-0x20) | No | No | Yes |
-| Eurostar | 0xFF2B01 | No | Yes (5 ranges) | Yes | No |
-| A-Train | 0x69 | No | Yes (5 ranges) | Yes | No |
-| Class 92 | 0x62 | Yes | Yes | No | Yes |
+| Vehicle | Set | Catenary | 3rd Rail | Varies |
+|---------|-----|----------|----------|--------|
+| Type JB (Class 73) | Main | — | 1420 hp / 177 kN | Power + TE + Effects (diesel: 600 hp / 160 kN) |
+| Brush Class 92 | Main | 6700 hp | 5360 hp | Power |
+| Hitachi A-Train | Main | 155 mph | 100 mph | Speed |
+| Bidwell Tripworker | Main | ✓ | ✓ | — |
+| ABB Class 325 | Main | ✓ | ✓ | — |
+| Electrostar | Main | ✓ | ✓ | — |
+| BREL Class 313 | Add-on | ✓ | ✓ | — |
+| GEC-Alstom Eurostar | Add-on | 186 mph / 16400 hp | 110 mph / 4600 hp | Speed + Power |
 
 ---
 

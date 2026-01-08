@@ -52,26 +52,35 @@ No need to include dual-power labels (SAAZ, 3RDC) - dual-power tracks declare th
 Diesel by default, electric on any 3rd rail:
 
 ```nml
+// Class 73: 1420 hp / 177 kN (3rd rail) or 600 hp / 160 kN (diesel)
 switch(FEAT_TRAINS, SELF, sw_class73_power,
        tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
-    1: return 1600;  // Electric - any 3rd rail detected
+    1: return 1420;  // Electric - 3rd rail
     0: return 600;   // Diesel fallback
 }
 ```
 
-### Eurostar/A-Train - Dual-Voltage Speed
+### Dual-Voltage EMUs - Speed Callback
 
-Dual-voltage EMUs that run on either 3rd rail or catenary. Speed depends on power source (3rd rail = 750V DC limited, catenary = 25kV AC full power):
+Dual-voltage EMUs run on either 3rd rail or catenary. Speed limited on 3rd rail (750V DC) vs full speed on catenary (25kV AC):
 
 ```nml
+// Eurostar: 186 mph (catenary) / 110 mph (3rd rail)
 switch(FEAT_TRAINS, SELF, sw_eurostar_speed,
        tile_powers_railtype(ELRL)) {
-    1: return 186;   // Catenary - full speed (25kV AC)
-    0: return 100;   // 3rd rail only - voltage limited (750V DC)
+    1: return 186;   // Catenary
+    0: return 110;   // 3rd rail
+}
+
+// A-Train: 155 mph (catenary) / 100 mph (3rd rail)
+switch(FEAT_TRAINS, SELF, sw_atrain_speed,
+       tile_powers_railtype(ELRL)) {
+    1: return 155;   // Catenary
+    0: return 100;   // 3rd rail
 }
 ```
 
-Note: The vehicle must already be on compatible track (3rd rail or catenary). This callback determines speed mode, not availability.
+Note: The vehicle must already be on compatible track. This callback determines speed mode, not availability.
 
 ### Class 92 - Dual-Voltage Power
 
@@ -89,15 +98,16 @@ switch(FEAT_TRAINS, SELF, sw_class92_power,
 For differentiated power by voltage system, check catenary first:
 
 ```nml
+// Class 92: 6700 hp (catenary) / 5360 hp (3rd rail)
 switch(FEAT_TRAINS, SELF, sw_class92_power_detailed,
        tile_powers_railtype(ELRL)) {
-    1: return 5000;  // Catenary - full power (25kV AC)
-    0: sw_class92_check_3rd_rail;  // Check 3rd rail
+    1: return 6700;  // Catenary (25kV AC)
+    0: sw_class92_check_3rd_rail;
 }
 
 switch(FEAT_TRAINS, SELF, sw_class92_check_3rd_rail,
        tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
-    1: return 4000;  // 3rd rail - reduced power (750V DC)
+    1: return 5360;  // 3rd rail (750V DC)
     0: return 0;     // No electric power
 }
 ```
