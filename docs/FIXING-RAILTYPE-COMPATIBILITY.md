@@ -224,53 +224,9 @@ If grfcodec reports errors:
 
 ## Modern Approach: Using Variable 63 (OpenTTD 1.11+)
 
-### Step 1: Convert to NML or Rewrite VarAction2
+Variable 63 (added in OpenTTD 1.11) offers a simpler alternative that doesn't require maintaining a large translation table. Instead of enumerating all possible labels, you ask the game "would this tile power a vehicle of type X?"
 
-The Variable 63 approach requires significant restructuring.
-
-### Step 2: Simplify Translation Table
-
-Only include the types you explicitly test for:
-```nml
-railtypetable {
-    RAIL,   // Baseline
-    ELRL,   // Catenary
-    SAA3,   // 3rd rail (standardized)
-    _3RDR   // 3rd rail (legacy)
-}
-```
-
-### Step 3: Replace Variable 4A with tile_powers_railtype()
-
-**Before (Variable 4A)**:
-```nfo
-// Check index range 0x02-0x20 for 3rd rail
-02 00 37 81 4A 00 FF 01 37 00 02 20 47 00
-```
-
-**After (Variable 63 / NML)**:
-```nml
-switch(FEAT_TRAINS, SELF, sw_class73_power,
-       tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)) {
-    1: return ELECTRIC_POWER;
-    0: return DIESEL_POWER;
-}
-```
-
-### Step 4: Check Both Legacy and Modern Labels
-
-Always test for BOTH standardized (SAA3) and legacy (3RDR) labels:
-```nml
-// 3rd rail: test both
-tile_powers_railtype(SAA3) || tile_powers_railtype(_3RDR)
-
-// Catenary: just ELRL is usually sufficient
-tile_powers_railtype(ELRL)
-```
-
-### Step 5: Remove Complex Range Calculations
-
-No more maintaining 5-range catenary checks or 30-entry translation tables.
+For a complete guide to converting UKRS2 to use Variable 63, see [VARIABLE-63-MODERN-FIX.md](VARIABLE-63-MODERN-FIX.md).
 
 ---
 

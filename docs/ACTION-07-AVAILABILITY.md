@@ -118,11 +118,4 @@ Label 55: // Success - vehicle is available
 
 ## Adding New Labels
 
-To support a new 3rd rail track type label:
-
-1. Add the label to the translation table (see [RAIL-TRANSLATION-TABLE.md](RAIL-TRANSLATION-TABLE.md))
-2. Add a new Action 07 check in the availability chain:
-   ```nfo
-   07 00 04 0E "NEWR" 55
-   ```
-3. Position it before the "hide vehicle" sprite (9522)
+For instructions on adding new labels to the availability chain, see [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md).

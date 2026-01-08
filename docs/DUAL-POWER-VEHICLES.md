@@ -1,4 +1,4 @@
-# Affected Vehicles
+# Dual-Power Vehicles
 
 This document lists all vehicles in UKRS2 that have railtype-dependent behavior.
 
@@ -155,18 +155,6 @@ This is because catenary track indexes are not contiguous in the translation tab
 
 ---
 
-## Updating for New Track Types
+## Maintenance
 
-When adding support for a new 3rd rail track type:
-1. Add label to translation table (get new index)
-2. If index > 0x20, update Type JB callback range max
-3. Update Action 7 availability chains
-4. Test Class 92 power switching
-
-When adding support for a new catenary track type:
-1. Add label to translation table (get new index)
-2. If index not in existing ranges, add new range to:
-   - Eurostar speed callback
-   - A-Train speed callback
-   - Class 92 catenary detection
-3. Ensure all affected callbacks have correct range count
+For instructions on updating these vehicles to support new track types, see [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md).

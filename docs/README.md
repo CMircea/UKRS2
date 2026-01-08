@@ -13,45 +13,9 @@ This requires complex detection logic to determine what track type the train is 
 
 ## Historical Context
 
-### Timeline
+PikkaBird released UKRS2 v1.05 in January 2013. CMircea forked it in February 2018 as "UKRS2 - Community Bugfixes" to fix compatibility with modern track sets, releasing v1.06 in September 2020.
 
-| Date | Event |
-|------|-------|
-| **Jan 2, 2013** | PikkaBird releases UKRS2 **v1.05** (the last official version) |
-| **May 2017** | NekoMaster reports speed issues with NuTracks |
-| **Feb 16, 2018** | CMircea asks PikkaBird how to fix railtype compatibility |
-| **Feb 18, 2018** | PikkaBird [posts the rail table](https://www.tt-forums.net/viewtopic.php?p=1202856#p1202856) |
-| **Feb 22-23, 2018** | CMircea forks and releases "UKRS2 - Community Bugfixes" |
-| **Sept 7, 2020** | CMircea releases **v1.06** with full standard railtype support |
-| **2021** | OpenTTD 1.11 adds Variable 63 (too late for UKRS2's architecture) |
-
-**Key insight**: The entire fork happened in ONE WEEK after PikkaBird provided guidance.
-
-### The Forum Thread
-
-**Thread**: [UKRS2 - tt-forums.net](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56)
-
-**PikkaBird** (Feb 18, 2018):
-> Here's the rail table from UKRS2... I guess all you'd have to do is replace the 16 **"nutracks nonsense"** labels with the updated equivalents.
-
-**CMircea** (Feb 23, 2018):
-> deciphering NFO without any comments is a real pain in the arse
-
-### The Core Problem
-
-Real British trains have complex power systems. UKRS2 needs to detect what track type the train is currently on and adjust power/speed accordingly. The original code uses Variable 4A (railtype index from a translation table), which requires manually enumerating all possible railtype labels. When new track sets appear with labels not in the table, detection fails.
-
-Modern track sets use the Standardized Railtype Scheme. UKRS2 v1.06 now supports these, but the architecture remains dependent on the translation table approach.
-
-## Understanding NFO
-
-NFO is **serialized binary data**, not a programming language. Key facts:
-
-- No functions, includes, or macros - callbacks are copy-pasted per vehicle
-- Little-endian byte order (`37 00` = 0x0037)
-- grfcodec adds human-readable sprite numbers and sizes
-
-This means fixing one vehicle doesn't automatically fix others - each must be updated individually.
+The fork happened after PikkaBird provided guidance on the [tt-forums thread](https://www.tt-forums.net/viewtopic.php?t=45637) (pages 54-56). For the full timeline and technical history, see [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md).
 
 ## Documentation Files
 
@@ -76,7 +40,7 @@ This means fixing one vehicle doesn't automatically fix others - each must be up
 
 | File | Description |
 |------|-------------|
-| [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md) | Step-by-step guide to fix railtype compatibility issues (includes NFO byte-level reference) |
+| [FIXING-RAILTYPE-COMPATIBILITY.md](FIXING-RAILTYPE-COMPATIBILITY.md) | Step-by-step guide to fix railtype compatibility issues (includes history and NFO byte-level reference) |
 | [VARIABLE-63-MODERN-FIX.md](VARIABLE-63-MODERN-FIX.md) | Modern approach using Variable 63 (OpenTTD 1.11+) |
 
 ## Quick Reference
@@ -91,14 +55,6 @@ This means fixing one vehicle doesn't automatically fix others - each must be up
 | 10092-10093 | Catenary detection VarAction2 (multi-range) |
 | 10156 | Class 92 definition |
 | 14053 | A-Train definition |
-
-### Index Ranges in Translation Table
-
-| Track Type | Index Range |
-|------------|-------------|
-| Plain rail (unpowered) | 0x00 |
-| 3rd rail available | 0x02 - 0x20 |
-| Catenary available | 0x01, 0x03, 0x05, 0x07, 0x17 - 0x2A |
 
 ### Magic Variables
 
