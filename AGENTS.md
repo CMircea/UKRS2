@@ -829,13 +829,15 @@ See [OpenTTD PR #7000](https://github.com/OpenTTD/OpenTTD/pull/7000) for origina
 - Test GRF files in OpenTTD after changes
 - Keep changes minimal and focused on bugfixes
 - **Add visual byte breakdowns** when writing or updating complex NFO (VarAction2 chains, Action 7 conditionals, callbacks) - the hex is unreadable without annotations:
-  ```nfo
-  // Example: Annotate what each byte means
-  1234 * 14    02 00 A0 85         // Action 2, trains, set-id=A0, type 85
-               0C 00 FF FF         // var 0C, shift 0, mask FFFF
-               01                  // 1 range
-               A1 00 10 00 10 00   // callback 0x10 → set-id A1
-               A2 00               // default → set-id A2
+  ```
+  1234 * 14    02 00 A0 85 0C 00 FF FF 01 A1 00 10 00 10 00 A2 00
+               │  │  │  │  │  │  └──┴─ mask: FFFF (word)
+               │  │  │  │  │  └────── shift: 00
+               │  │  │  │  └───────── variable: 0C (callback number)
+               │  │  │  └──────────── type: 85 (byte, self, advanced)
+               │  │  └─────────────── set-id: A0
+               │  └──────────────────  feature: 00 (trains)
+               └───────────────────── Action 2
   ```
 
 ### DON'T
