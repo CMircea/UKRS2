@@ -9,6 +9,16 @@
 - **Repository**: https://github.com/CMircea/UKRS2
 - **Current Version**: 1.06
 - **GRF ID**: `MCX` (prefix for both sets)
+- **Codebase**: ~15,000 lines of hand-coded NFO (~2008)
+
+## Understanding NFO
+
+**NFO is serialized structs in hex, not a programming language.**
+
+- Code reuse = copy/paste mostly
+- VarAction2 chains = logic/control flow
+- Variable 7E = procedure calls (call another VarAction2 chain)
+- Variable 7D = temporary registers (store/retrieve computed values)
 
 ## Repository Structure
 
@@ -93,6 +103,11 @@ Used for computed decisions based on game state:
 - Livery variations
 - Callback results
 
+### NFO Terminology
+- **"60+x variable"**: Variables 60-7F take an extra PARAMETER byte after the var number
+- **"80+x variable"**: Direct memory offset into 1994 DOS vehicle struct
+- **VarAction2 types**: 81=this vehicle, 82=lead vehicle, 85/86=advanced computations
+
 ### Rail Types
 The set supports multiple rail types with specific labels:
 - Standard rail: `RAIL`
@@ -132,6 +147,13 @@ In `ukrs2.nfo` around line 80-88 (Action 8):
 94 "Version " 95 "1.06"
 ```
 
+## Known Issues
+
+### Dual-Mode Locomotive Bugs
+Dual-mode locos (Class 73, Eurostar, A-Train, Class 92) have railtype detection bugs. The code uses deprecated variable 4A for railtype checks.
+
+**Fix approach**: Use variable 63 (requires OpenTTD 1.11+). See VarAction2/Vehicles documentation for details.
+
 ## Conventions for AI Assistants
 
 ### DO
@@ -169,7 +191,18 @@ Run nforenum.
 
 ## Resources
 
+### Key Specifications
+- [NewGRF Specs Main Page](https://newgrf-specs.tt-wiki.net/wiki/Main_Page)
+- [VarAction2](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2)
+- [VarAction2/Vehicles](https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Vehicles)
+- [VarAction2Advanced](https://newgrf-specs.tt-wiki.net/wiki/VarAction2Advanced)
+- [Action0/Railtypes](https://newgrf-specs.tt-wiki.net/wiki/Action0/Railtypes)
+- [Standardized Railtype Scheme](https://newgrf-specs.tt-wiki.net/wiki/Standardized_Railtype_Scheme)
+- [Action7](https://newgrf-specs.tt-wiki.net/wiki/Action7)
+- [Callbacks](https://newgrf-specs.tt-wiki.net/wiki/Callbacks)
+- [Callbacks Tutorial](https://www.tt-wiki.net/wiki/Callbacks_Tutorial)
+
+### Other Resources
 - [TT-Forums Wiki](http://users.tt-forums.net/pikka/wiki/)
-- [OpenTTD NewGRF Documentation](https://newgrf-specs.tt-wiki.net/)
 - [GRFCodec Documentation](https://github.com/OpenTTD/grfcodec)
 - [TT-Forums](http://www.tt-forums.net/) - Community support
