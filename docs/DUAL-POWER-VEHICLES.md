@@ -41,7 +41,7 @@ ELSE:
 ### Basic Info
 - **Vehicle ID**: 0xFF 0x2B 0x01 (extended ID in ukrs2-addon.nfo)
 - **Type**: High-speed electric multiple unit
-- **Real-world**: Eurostar, runs on both 3rd rail (750V DC) and overhead catenary (25kV AC)
+- **Real-world**: Eurostar, runs on either 3rd rail (750V DC) or overhead catenary (25kV AC)
 
 ### Behavior
 - **On catenary**: 186 mph, 16400 hp
@@ -130,7 +130,7 @@ power = calculate_power(catenary_available, third_rail_available)
 - **Real-world**: Dual-voltage EMU
 
 ### Behavior
-- Dual-voltage: operates on both 3rd rail and catenary
+- Dual-voltage: operates on either 3rd rail or catenary
 
 ---
 
@@ -141,7 +141,7 @@ power = calculate_power(catenary_available, third_rail_available)
 - **Real-world**: Class 325, dual-voltage postal EMU
 
 ### Behavior
-- Dual-voltage: operates on both 3rd rail and catenary
+- Dual-voltage: operates on either 3rd rail or catenary
 
 ---
 
@@ -152,7 +152,7 @@ power = calculate_power(catenary_available, third_rail_available)
 - **Real-world**: Bombardier Electrostar family, dual-voltage variants
 
 ### Behavior
-- Dual-voltage: operates on both 3rd rail and catenary
+- Dual-voltage: operates on either 3rd rail or catenary
 
 ---
 
@@ -163,7 +163,7 @@ power = calculate_power(catenary_available, third_rail_available)
 - **Real-world**: Class 313, dual-voltage suburban EMU
 
 ### Behavior
-- Dual-voltage: operates on both 3rd rail and catenary
+- Dual-voltage: operates on either 3rd rail or catenary
 
 ---
 
