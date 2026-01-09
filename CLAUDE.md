@@ -103,17 +103,73 @@ Used for computed decisions based on game state:
 - Livery variations
 - Callback results
 
+#### VarAction2 Structure
+```
+spritenum * length 02 feature varaction2-id type num-ranges...
+```
+- **type 81**: Read variable from current vehicle
+- **type 82**: Read variable from lead vehicle in consist
+- **type 85/86**: Advanced computation with operators
+
+#### Key Vehicle Variables for UKRS2
+| Var | Size | Description | Notes |
+|-----|------|-------------|-------|
+| 40 | D | Position in consist | Bits 0-7: position, 8-15: count |
+| 42 | D | Curvature/position info | Used for articulated vehicles |
+| 4A | B | Current railtype (DEPRECATED) | Only returns track under vehicle |
+| 63 | D | Tile railtype info (OpenTTD 1.11+) | **Use this instead of 4A** |
+
+#### Variable 63 vs 4A (Railtype Detection)
+- **Var 4A** (deprecated): Returns railtype of tile under vehicle. Fails for dual-mode because it only sees current tile.
+- **Var 63** (param=0): Returns railtype label of current tile. Supports proper detection of electrification.
+- Param byte for var 63: `00` = current tile's railtype label as DWORD
+
 ### NFO Terminology
 - **"60+x variable"**: Variables 60-7F take an extra PARAMETER byte after the var number
 - **"80+x variable"**: Direct memory offset into 1994 DOS vehicle struct
 - **VarAction2 types**: 81=this vehicle, 82=lead vehicle, 85/86=advanced computations
 
-### Rail Types
-The set supports multiple rail types with specific labels:
-- Standard rail: `RAIL`
-- Electrified (overhead): `ELRL`
-- Third rail: `3RDR`, `3RDC` (with catenary)
-- Various speed-class variants
+### Rail Types (Standardized Railtype Scheme)
+
+The set uses the standardized railtype labeling scheme:
+
+| Label | Meaning | Speed Class |
+|-------|---------|-------------|
+| `RAIL` | Unelectrified standard rail | Any |
+| `ELRL` | Overhead catenary electrified | Any |
+| `3RDR` | Third rail only | Any |
+| `3RDC` | Third rail + overhead catenary | Any |
+
+**Speed class suffixes** (appended to base label):
+- No suffix = any speed
+- `A` = ≤75 km/h, `B` = ≤120 km/h, `C` = ≤160 km/h
+- `D` = ≤200 km/h, `E` = ≤250 km/h, `F` = ≤300 km/h
+- Example: `ELRA` = electrified rail, ≤75 km/h
+
+**Dual-mode considerations**: Trains that can use multiple power modes (diesel + electric) need to detect the actual railtype to adjust power/speed. This is where var 63 is needed.
+
+### VarAction2 Advanced Operators
+
+For type 85/86 VarAction2, operators work on an accumulator:
+```
+\2+ = add          \2- = subtract      \2* = multiply
+\2/ = divide       \2% = modulo        \2& = AND
+\2| = OR           \2^ = XOR           \2< = min
+\2> = max          \2u< = unsigned min \2u> = unsigned max
+\2sto = store to temp register (var 7D)
+\2r = read from temp register
+```
+
+**Procedure calls (var 7E)**: Calls another VarAction2 chain and uses its result:
+```
+7E xx  // Call VarAction2 ID xx, result goes to accumulator
+```
+
+**Temporary storage (var 7D)**: 256 registers (00-FF) for intermediate values:
+```
+\2s 10  // Store accumulator to register 0x10
+\2r 10  // Read register 0x10 into accumulator
+```
 
 ## Configuration Parameters
 
@@ -152,7 +208,38 @@ In `ukrs2.nfo` around line 80-88 (Action 8):
 ### Dual-Mode Locomotive Bugs
 Dual-mode locos (Class 73, Eurostar, A-Train, Class 92) have railtype detection bugs. The code uses deprecated variable 4A for railtype checks.
 
-**Fix approach**: Use variable 63 (requires OpenTTD 1.11+). See VarAction2/Vehicles documentation for details.
+**Affected vehicles**: Any locomotive that changes behavior based on electrification (adjusts power, speed, or visual appearance when on electrified vs non-electrified track).
+
+**The problem**: Variable 4A returns a numeric railtype index that's inconsistent across different games/GRF combinations. The index depends on which GRFs define which railtypes and in what order.
+
+**Fix approach**:
+1. Replace var 4A checks with var 63 (requires OpenTTD 1.11+)
+2. Var 63 with param 00 returns the railtype LABEL (e.g., `ELRL` as bytes `45 4C 52 4C`)
+3. Compare against known labels instead of numeric indexes
+4. Add Action 7/9 version check to maintain compatibility with older OpenTTD
+
+**Example pattern** (conceptual):
+```nfo
+// Old (broken): Check if railtype index == some value
+81 4A 00 FF ...  // var 4A, no shift, mask FF
+
+// New (correct): Check if railtype label == ELRL
+85 63 00 ...     // var 63, param 00, returns label
+// Then compare against "ELRL" bytes
+```
+
+### Callback Reference
+
+Key callbacks used in UKRS2:
+| CB | Hex | Purpose |
+|----|-----|---------|
+| 10 | 0x10 | Visual effect (steam, diesel smoke, electric sparks) |
+| 15 | 0x15 | Refit capacity |
+| 16 | 0x16 | Articulated engine parts |
+| 23 | 0x23 | Additional text in purchase menu |
+| 36 | 0x36 | Property change (power, weight, TE) |
+
+Callback 36 is particularly relevant for dual-mode locos - it can dynamically change power/speed based on railtype.
 
 ## Conventions for AI Assistants
 
