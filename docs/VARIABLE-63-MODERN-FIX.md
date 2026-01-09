@@ -37,7 +37,7 @@ railtypetable {
     RAIL,   // 0 - baseline unpowered
     ELRL,   // 1 - catenary (THE universal catenary label)
     SAA3,   // 2 - 3rd rail (standardized scheme)
-    _3RDR,  // 3 - 3rd rail (legacy/pb_trax)
+    _3RDR,  // 3 - 3rd rail (legacy/pb_trax) - underscore prefix required in NML
 }
 ```
 
@@ -47,10 +47,10 @@ No need to include dual-power labels (SAAZ, 3RDC) - dual-power tracks declare th
 
 ### Why Both SAA3 AND 3RDR?
 
-Why check both `SAA3` and `_3RDR` instead of just one? Different track sets use different conventions:
+Why check both `SAA3` and `3RDR` instead of just one? Different track sets use different conventions:
 
 - **Legacy track sets (pb_trax)**: Only define `3RDR`
-- **Modern track sets (NuTracks, U&ReRMM)**: Declare `3RDR` compatibility in their `powered_railtype_list`, so checking `_3RDR` covers them
+- **Modern track sets (NuTracks, U&ReRMM)**: Declare `3RDR` compatibility in their `powered_railtype_list`, so checking `3RDR` covers them
 - **Metro Track Set**: Defines `SAA3` but relies on implicit self-power rather than declaring `3RDR` compatibility
 
 Checking both ensures full coverage across all three eras of track set development.
