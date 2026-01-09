@@ -120,9 +120,20 @@ spritenum * length 02 feature varaction2-id type num-ranges...
 | 63 | D | Tile railtype info (OpenTTD 1.11+) | **Use this instead of 4A** |
 
 #### Variable 63 vs 4A (Railtype Detection)
-- **Var 4A** (deprecated): Returns railtype of tile under vehicle. Fails for dual-mode because it only sees current tile.
-- **Var 63** (param=0): Returns railtype label of current tile. Supports proper detection of electrification.
-- Param byte for var 63: `00` = current tile's railtype label as DWORD
+- **Var 4A** (deprecated): Returns numeric railtype index. Index values are inconsistent across GRF combinations.
+- **Var 63**: Queries track-type compatibility/poweredness. Parameter is index into vehicle's railtype translation table.
+
+**Var 63 return value** (bit flags):
+| Bit | Meaning |
+|-----|---------|
+| 0 | Track-type NewGRF knows the queried type |
+| 1 | Vehicle is compatible with current tile |
+| 2 | Vehicle is **powered** on current tile |
+| 3 | Queried type equals current tile's type |
+
+**Usage**: Test bit 2 to check if vehicle has power on current track.
+
+Source: [OpenTTD PR #8554](https://github.com/OpenTTD/OpenTTD/pull/8554)
 
 ### NFO Terminology
 - **"60+x variable"**: Variables 60-7F take an extra PARAMETER byte after the var number
@@ -131,14 +142,16 @@ spritenum * length 02 feature varaction2-id type num-ranges...
 
 ### Rail Types (Standardized Railtype Scheme)
 
-The set uses the standardized railtype labeling scheme:
+The standardized scheme decouples track sets from vehicle sets for easy mixing. Default labels `RAIL`, `ELRL`, `MONO`, `MGLV` cannot be undefined - the game always adds them if vehicles use those types.
 
-| Label | Meaning | Speed Class |
-|-------|---------|-------------|
-| `RAIL` | Unelectrified standard rail | Any |
-| `ELRL` | Overhead catenary electrified | Any |
-| `3RDR` | Third rail only | Any |
-| `3RDC` | Third rail + overhead catenary | Any |
+| Label | Meaning | Notes |
+|-------|---------|-------|
+| `RAIL` | Unelectrified standard rail | Base game default |
+| `ELRL` | Overhead catenary electrified | Base game default |
+| `3RDR` | Third rail only | String literal (starts with digit) |
+| `3RDC` | Third rail + overhead catenary | String literal |
+| `MONO` | Monorail | Base game default |
+| `MGLV` | Maglev | Base game default |
 
 **Speed class suffixes** (appended to base label):
 - No suffix = any speed
@@ -146,7 +159,11 @@ The set uses the standardized railtype labeling scheme:
 - `D` = ≤200 km/h, `E` = ≤250 km/h, `F` = ≤300 km/h
 - Example: `ELRA` = electrified rail, ≤75 km/h
 
+**NFO note**: Labels starting with digits (like `3RDR`) must be written as string literals in NFO.
+
 **Dual-mode considerations**: Trains that can use multiple power modes (diesel + electric) need to detect the actual railtype to adjust power/speed. This is where var 63 is needed.
+
+Source: [Standardized Railtype Scheme](https://newgrf-specs.tt-wiki.net/wiki/Standardized_Railtype_Scheme)
 
 ### VarAction2 Advanced Operators
 
@@ -213,20 +230,23 @@ Dual-mode locos (Class 73, Eurostar, A-Train, Class 92) have railtype detection 
 **The problem**: Variable 4A returns a numeric railtype index that's inconsistent across different games/GRF combinations. The index depends on which GRFs define which railtypes and in what order.
 
 **Fix approach**:
-1. Replace var 4A checks with var 63 (requires OpenTTD 1.11+)
-2. Var 63 with param 00 returns the railtype LABEL (e.g., `ELRL` as bytes `45 4C 52 4C`)
-3. Compare against known labels instead of numeric indexes
+1. Replace var 4A checks with var 63
+2. Var 63 parameter = index into railtype translation table (e.g., index for `ELRL`)
+3. Test bit 2 of result to check if vehicle is powered
 4. Add Action 7/9 version check to maintain compatibility with older OpenTTD
 
 **Example pattern** (conceptual):
 ```nfo
 // Old (broken): Check if railtype index == some value
-81 4A 00 FF ...  // var 4A, no shift, mask FF
+81 4A 00 FF ...  // var 4A returns inconsistent index
 
-// New (correct): Check if railtype label == ELRL
-85 63 00 ...     // var 63, param 00, returns label
-// Then compare against "ELRL" bytes
+// New (correct): Check if powered on ELRL-type track
+// Assuming ELRL is at index 01 in railtype table
+81 63 01 04 ...  // var 63, param=01 (ELRL index), mask bit 2
+// Result: bit 2 set = powered, bit 2 clear = not powered
 ```
+
+See [OpenTTD PR #7000](https://github.com/OpenTTD/OpenTTD/pull/7000) for original discussion.
 
 ### Callback Reference
 
