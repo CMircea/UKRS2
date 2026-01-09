@@ -95,7 +95,7 @@ Same catenary detection as Eurostar - 5 disjoint ranges.
 ### Basic Info
 - **Vehicle ID**: 0x62
 - **Type**: Dual-voltage electric freight locomotive
-- **Real-world**: Class 92, operates on 750V DC 3rd rail and 25kV AC catenary
+- **Real-world**: Class 92, operates on either 750V DC 3rd rail or 25kV AC catenary
 
 ### Behavior
 - **On catenary**: 6700 hp

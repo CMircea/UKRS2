@@ -45,6 +45,16 @@ railtypetable {
 
 No need to include dual-power labels (SAAZ, 3RDC) - dual-power tracks declare the base labels (SAA3, 3RDR, ELRL) in their `powered_railtype_list`, so checking base labels covers them.
 
+### Why Both SAA3 AND 3RDR?
+
+Why check both `SAA3` and `_3RDR` instead of just one? Different track sets use different conventions:
+
+- **Legacy track sets (pb_trax)**: Only define `3RDR`
+- **Modern track sets (NuTracks, U&ReRMM)**: Declare `3RDR` compatibility in their `powered_railtype_list`, so checking `_3RDR` covers them
+- **Metro Track Set**: Defines `SAA3` but relies on implicit self-power rather than declaring `3RDR` compatibility
+
+Checking both ensures full coverage across all three eras of track set development.
+
 ## Detection Logic
 
 ### Class 73 (Electro-Diesel) - 3rd Rail Power
