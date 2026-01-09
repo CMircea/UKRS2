@@ -214,7 +214,7 @@ Use escape sequences instead of raw hex for readability. Prefer these in new cod
 **Byte ordering** - NFO uses little-endian:
 ```
 Decimal 1000 as word:
-  1000 = 0x03E8 → pad to 4 digits → split: 03 E8 → reverse: E8 03
+  1000 = 0x03E8 → split into bytes: 03 E8 → reverse to little-endian: E8 03
 ```
 
 ---
@@ -495,11 +495,11 @@ Skip sprites based on conditions. Action 7 executes during activation; Action 9 
 
 ```nfo
 // Skip if OpenTTD version < 1.11 (where var 63 was added)
-47 * 6 07 9D 04 05 00 00 00 01 nn
+47 * 9 07 9D 04 05 00 00 00 01 nn
 // 9D = platform version variable
 // 04 = dword size
 // 05 = greater than condition
-// value = version number
+// 00 00 00 01 = version number (dword, little-endian)
 // nn = sprites to skip
 ```
 
@@ -644,19 +644,20 @@ Builds multi-vehicle units like locomotives with tenders or EMUs:
 ```nfo
 // Pattern: Check callback number (var 0C) and branch
 // The VarAction2 chain starts from Action 3
-// Note: set-ids like A0, A1, A2 are single-byte hex IDs you assign
+// Note: set-ids like A0, A1, A2 are single-byte IDs you assign
+//       In range tables they appear as word fields (little-endian): A1 00 = set-id 0x00A1
 
 // VarAction2 to dispatch callbacks (set-id A0)
 1234 * 14    02 00 A0 85              // Action 2, trains, set-id=A0, type 85
              0C 00 FF FF              // var 0C, shift 0, mask FFFF (word!)
              02                       // 2 ranges
-             A1 00 10 00 10 00        // callback 0x10 → set-id A1
-             A2 00 36 00 36 00        // callback 0x36 → set-id A2
-             A3 00                    // default → set-id A3 (graphics)
+             A1 00 10 00 10 00        // set-id A1 (word), range 0x0010-0x0010 (callback 0x10)
+             A2 00 36 00 36 00        // set-id A2 (word), range 0x0036-0x0036 (callback 0x36)
+             A3 00                    // default set-id A3 (word)
 
-// Callback 10 handler (set-id A1) - returns visual effect
+// Callback 0x10 handler (set-id A1) - returns visual effect
 1235 * 10    02 00 A1 81              // Action 2, trains, set-id=A1, type 81
-             variable 00 FF           // check some variable
+             10 00 FF                 // var 10, shift 0, mask FF
              01                       // 1 range
              00 80 00 00              // return 0x00 (bit 15 set = callback result)
              40 80                    // default: return 0x40
