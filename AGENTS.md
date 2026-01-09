@@ -481,14 +481,15 @@ Skip sprites based on conditions. Action 7 executes during activation; Action 9 
 | **03** | Variable does NOT equal value |
 | **04** | Variable < value |
 | **05** | Variable > value |
-| **06** | GRFID is active |
-| **07** | GRFID is NOT active |
-| **08** | GRFID has been initialized (set up Action 8) |
-| **09** | GRFID has NOT been initialized |
-| **0A** | Cargo type is available |
-| **0B** | Cargo type is NOT available |
-| **0C** | Railtype label is defined |
-| **0D** | Railtype label is NOT defined |
+| **06** | GRFID is active (variable 88 only) |
+| **07** | GRFID is NOT active (variable 88 only) |
+| **08** | GRFID is not active yet but will be activated (variable 88 only) |
+| **09** | GRFID is or will be active (variable 88 only) |
+| **0A** | GRFID is not nor will be active (variable 88 only) |
+| **0B** | Cargo type is NOT available (variable ignored; value is label) |
+| **0C** | Cargo type is available (variable ignored; value is label) |
+| **0D** | Railtype label is NOT defined (variable ignored; value is label) |
+| **0E** | Railtype label is defined (variable ignored; value is label) |
 
 #### Example: Version Check
 
@@ -631,7 +632,7 @@ Particularly important for dual-mode locomotives. Allows changing:
 
 Variable **10** contains the property number being queried. Return the new value, or return **7FFF** (callback failure) to use the default property value.
 
-#### Callback 16 (Articulated Parts)
+#### Callback 22 (Articulated Parts)
 
 Builds multi-vehicle units like locomotives with tenders or EMUs:
 - Called repeatedly with variable **10** containing the part index (1, 2, 3...)
