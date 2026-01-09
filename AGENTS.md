@@ -1,4 +1,4 @@
-# CLAUDE.md - AI Assistant Guide for UKRS2
+# AGENTS.md - AI Assistant Guide for UKRS2
 
 ## Project Overview
 
@@ -31,7 +31,8 @@ UKRS2/
 ├── ukrs2.license       # License for main set
 ├── ukrs2-addon.license # License for add-on set
 ├── README.md           # Project description
-└── CLAUDE.md           # This file
+├── CLAUDE.md           # References AGENTS.md (for Claude Code)
+└── AGENTS.md           # This file (AI assistant documentation)
 ```
 
 ## File Formats
